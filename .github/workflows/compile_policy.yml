@@ -1,0 +1,30 @@
+name: Build tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          # fetch full history so refs are available
+          fetch-depth: 0
+          # on PRs this is the source branch, otherwise the pushed branch
+          ref: ${{ github.head_ref || github.ref }}
+
+      - name: Run make
+        run: |
+          sudo apt-get install checkpolicy
+          sudo apt-get install selinux-utils selinux-policy-dev
+          make clean
+          grep -rni "8081"
+          make
+          sudo make install
+      - name: Create Policy Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: confident-sepolicy
+          path: /etc/selinux/confident_policy # or path/to/artifact

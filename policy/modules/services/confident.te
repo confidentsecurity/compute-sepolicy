@@ -1,0 +1,105 @@
+policy_module(confident, 1.0.0)
+
+# needed contexts for confident security
+#
+#
+# Declaratiions
+#
+#
+
+attribute confident_domain;
+attribute confident_internal_exec_type;
+attribute confident_exec_type;
+attribute confident_internal_domain;
+
+attribute_role confident_user_roles;
+
+# Insert declarations for needed directories
+type confident_root_t;
+type confident_bin_t;
+type confident_etc_t;
+
+
+# Insert declarations for binary files (touching important data or not)
+type confident_internal_exec_t;
+type confident_exec_t;
+type confident_config_t;
+
+# Insert Declarations for service related files
+# needs to accessible by systemctl (and symlinked for runtime servicei starting)
+type confident_service_t;
+
+# Temporary permissions for ollama (will have to change for openllm if they move to that)
+
+# Ollama has it's binaries as well as supporting libs
+type confident_ollama_lib_t;
+type confident_ollama_exec_t;
+
+# Add the permissions to the ollama port (for now)
+
+type confident_port_t;
+typeattribute confident_port_t reserved_port_type;
+# Change this port type to the Openllm when implemented
+portcon tcp 11434 system_u:object_r:confident_port_t:s1
+
+# Allow internal binarie to execute themselves:
+allow confident_internal_exec_t self:file { read execute entrypoint };
+
+# Allow internal binaries ability to load libs:
+allow confident_internal_exec_t ld_so_t:file { read execute map };
+
+# Allowing blanket permissions for now on the ollama port from server
+allow confident_ollama_exec_t confident_port_t:tcp_socket { accept append bind connect create getattr getopt ioctl listen lock map name_bind read recvfrom relabelfrom relabelto sendto setattr setopt shutdown write node_bind};
+
+# Allowing our node_worker to communicate through to ollama
+allow confident_internal_exec_t confident_port_t:tcp_socket { connect create read recvfrom sendto } ;
+
+# Allowing our router_comm to bind to the external facing requests.
+type router_com_port_t;
+typeattribute router_com_port_t reserved_port_type;
+portcon tcp 8081 system_u:object_r:router_com_port_t:s0
+
+#TESTING, remove when finished. colin note
+# This allows a shell to become confident binaries domain (to generate auditd logs)
+ifdef(`enable_user_transition', `
+  allow user_t confident_internal_exec_t:file entrypoint;
+  allow user_t confident_exec_t:file entrypoint;
+  type_transition user_t confident_internal_exec_t:process confident_internal_exec_t;
+  type_transition user_t confident_exec_t:process confident_exec_t;
+')
+
+ifdef(`enable_administrator_sshd', `
+allow ssh_keygen_t locale_t:dir search;
+allow ssh_keygen_t locale_t:file { getattr map open read };
+allow ssh_keygen_t locale_t:lnk_file read;
+
+allow sshd_t apt_exec_t:file getattr;
+allow sshd_t apt_var_cache_t:dir { getattr search };
+allow sshd_t apt_var_cache_t:file { getattr map open read };
+allow sshd_t apt_var_lib_t:dir { getattr open read search };
+allow sshd_t apt_var_lib_t:file { getattr open read };
+allow sshd_t bin_t:file { execute execute_no_trans ioctl map open read };
+allow sshd_t boot_t:dir search;
+allow sshd_t dpkg_exec_t:file { execute execute_no_trans getattr map open read };
+allow sshd_t dpkg_var_lib_t:dir search;
+allow sshd_t dpkg_var_lib_t:file { getattr open read };
+allow sshd_t fsadm_exec_t:file { execute execute_no_trans getattr map open read };
+allow sshd_t kernel_t:system module_request;
+allow sshd_t lib_t:file execute_no_trans;
+allow sshd_t loop_control_device_t:chr_file getattr;
+allow sshd_t mount_exec_t:file { execute execute_no_trans getattr map open read };
+allow sshd_t mount_runtime_t:dir search;
+allow sshd_t mount_runtime_t:file { getattr open read };
+allow sshd_t self:capability dac_override;
+allow sshd_t self:process signull;
+allow sshd_t shell_exec_t:file execute_no_trans;
+
+allow sshd_t user_home_dir_t:dir { add_name create write };
+allow sshd_t user_home_dir_t:file { create getattr open write };
+allow sshd_t usr_t:file { execute execute_no_trans };
+allow sshd_t var_lib_t:dir { add_name write };
+allow sshd_t var_lib_t:file { append create getattr ioctl open read setattr write };
+allow sshd_t var_log_t:dir { add_name write };
+allow sshd_t var_log_t:file { append create getattr ioctl open };
+allow sshd_t var_t:file { getattr open read };
+')

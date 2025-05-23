@@ -1,0 +1,15 @@
+/opt/confidentsec	-d	gen_context(system_u:object_r:confident_root_t, s0)
+/opt/confidentsec/bin	-d	gen_context(system_u:object_r:confident_bin_t, s0)
+/opt/confidentsec/etc	-d	gen_context(system_u:object_r:confident_etc_t, s0)
+
+/opt/confidentsec/bin/compute_boot	--	gen_context(system_u:object_r:confident_internal_exec_t, s0)
+/opt/confidentsec/bin/router_com	--	gen_context(system_u:object_r:confident_internal_exec_t, s0)
+/opt/confidentsec/bin/compute_worker	--	gen_context(system_u:object_r:confident_internal_exec_t, s0)
+
+/opt/confidentsec/bin/make-compute-config	--	gen_context(system_u:object_r:confident_exec_t, s0)
+
+/opt/confidentsec/etc/router-com-secret-wrapper	--	gen_context(system_u:object_r:confident_config_t,s0)
+/opt/confidentsec/etc/compute-boot-secret-wrapper	--	gen_context(system_u:object_r:confident_config_t,s0)
+
+/opt/confidentsec/etc/router_com\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
+

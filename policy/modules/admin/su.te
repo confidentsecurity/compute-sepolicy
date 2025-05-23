@@ -1,0 +1,9 @@
+policy_module(su, 1.16.0)
+
+########################################
+#
+# Declarations
+#
+
+type su_exec_t;
+corecmd_executable_file(su_exec_t)
