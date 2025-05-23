@@ -1,6 +1,6 @@
 name: Build tests
 
-on: [push, pull_request]
+on: workflow_call
 
 jobs:
   build:
@@ -20,7 +20,6 @@ jobs:
           sudo apt-get install checkpolicy
           sudo apt-get install selinux-utils selinux-policy-dev
           make clean
-          grep -rni "8081"
           make
           sudo make install
       - name: Create Policy Artifact
