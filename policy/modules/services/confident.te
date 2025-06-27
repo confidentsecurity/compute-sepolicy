@@ -7,10 +7,8 @@ policy_module(confident, 1.0.0)
 #
 #
 
-attribute confident_domain;
 attribute confident_internal_exec_type;
 attribute confident_exec_type;
-attribute confident_internal_domain;
 
 attribute_role confident_user_roles;
 
@@ -22,7 +20,9 @@ type confident_etc_t;
 
 # Insert declarations for binary files (touching important data or not)
 type confident_internal_exec_t;
+domain_type(confident_internal_exec_t);
 type confident_exec_t;
+domain_type(confident_exec_t);
 type confident_config_t;
 
 # Insert Declarations for service related files
@@ -42,7 +42,7 @@ typeattribute confident_port_t reserved_port_type;
 # Change this port type to the Openllm when implemented
 portcon tcp 11434 system_u:object_r:confident_port_t:s1
 
-# Allow internal binarie to execute themselves:
+# Allow internal binaries to execute themselves:
 allow confident_internal_exec_t self:file { read execute entrypoint };
 
 # Allow internal binaries ability to load libs:
@@ -58,6 +58,17 @@ allow confident_internal_exec_t confident_port_t:tcp_socket { connect create rea
 type router_com_port_t;
 typeattribute router_com_port_t reserved_port_type;
 portcon tcp 8081 system_u:object_r:router_com_port_t:s0
+
+## Type transitions table (from initrc/init to confident shell wrappers -> confident_internal)
+type_transition initrc_t confident_exec_t:process confident_exec_t;
+type_transition init_t confident_exec_t:process confident_exec_t;
+type_transition confident_exec_t confident_internal_exec_t:process confident_internal_exec_t;
+allow confident_exec_t self:process { transition sigchld };
+allow confident_internal_exec_t self:process { transition sigchld };
+
+# Associated exec rules
+allow initrc_t confident_exec_t:file { read execute open };
+allow init_t confident_exec_t:file { read execute open };
 
 #TESTING, remove when finished. colin note
 # This allows a shell to become confident binaries domain (to generate auditd logs)
