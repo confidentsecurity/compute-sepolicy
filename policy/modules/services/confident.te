@@ -66,8 +66,10 @@ type_transition confident_exec_t confident_internal_exec_t:process confident_int
 allow confident_exec_t self:process { transition sigchld };
 allow confident_internal_exec_t self:process { transition sigchld };
 
-allow initrc_t confident_exec_t:process { execute };
-allow confident_exec_t confident_internal_exec_t:process { execute };
+
+allow initrc_t confident_exec_t:process { transition };
+allow init_t confident_exec_t:process { transition };
+allow confident_exec_t confident_internal_exec_t:process { transition };
 
 # Associated exec rules
 allow initrc_t confident_exec_t:file { read execute open };
@@ -82,6 +84,7 @@ ifdef(`enable_user_transition', `
   type_transition user_t confident_exec_t:process confident_exec_t;
 ')
 
+# turned off for the time being. 
 ifdef(`enable_administrator_sshd', `
 allow ssh_keygen_t locale_t:dir search;
 allow ssh_keygen_t locale_t:file { getattr map open read };
