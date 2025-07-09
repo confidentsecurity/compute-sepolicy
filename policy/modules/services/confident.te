@@ -66,6 +66,9 @@ type_transition confident_exec_t confident_internal_exec_t:process confident_int
 allow confident_exec_t self:process { transition sigchld };
 allow confident_internal_exec_t self:process { transition sigchld };
 
+allow initrc_t confident_exec_t:process { execute }
+allow confident_exec_t confident_internal_exec_t:process { execute }
+
 # Associated exec rules
 allow initrc_t confident_exec_t:file { read execute open };
 allow init_t confident_exec_t:file { read execute open };
