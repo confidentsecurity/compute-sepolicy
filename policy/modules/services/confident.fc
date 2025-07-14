@@ -6,16 +6,14 @@
 /opt/confidentsec/bin/router_com	--	gen_context(system_u:object_r:confident_internal_exec_t, s0)
 /opt/confidentsec/bin/compute_worker	--	gen_context(system_u:object_r:confident_internal_exec_t, s0)
 
-/opt/confidentsec/bin/make-compute-config	--	gen_context(system_u:object_r:confident_exec_t, s0)
-
 /opt/confidentsec/bin/router-com-secret-wrapper	--	gen_context(system_u:object_r:confident_exec_t,s0)
 /opt/confidentsec/bin/make-compute-config	--	gen_context(system_u:object_r:confident_exec_t,s0)
 /opt/confidentsec/bin/system_conf.sh	--	gen_context(system_u:object_r:confident_exec_t,s0)
 /opt/confidentsec/bin/compute-boot-secret-wrapper	--	gen_context(system_u:object_r:confident_exec_t,s0)
 
 /opt/confidentsec/etc/compute_boot\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
-/opt/confidentsec/etc/compute_boot.yaml\.template	--	gen_context(system_u:object_r:confident_config_t,s0)
-/opt/confidentsec/etc/router_com\.yaml\.template	--	gen_context(system_u:object_r:confident_config_t,s0)
-/opt/confidentsec/etc/systemi\.conf	--	gen_context(system_u:object_r:confident_config_t,s0)
+/opt/confidentsec/etc/compute_boot\.yaml\.`template'	--	gen_context(system_u:object_r:confident_config_t,s0)
+/opt/confidentsec/etc/router_com\.yaml\.`template'	--	gen_context(system_u:object_r:confident_config_t,s0)
+/opt/confidentsec/etc/system\.conf	--	gen_context(system_u:object_r:confident_config_t,s0)
 /opt/confidentsec/etc/router_com\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
 
