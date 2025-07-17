@@ -104,9 +104,9 @@ ifdef(`init_systemd',`
 	systemd_watch_passwd_runtime_dirs(sysadm_t)
 ')
 
-tunable_policy(`allow_ptrace',`
-	domain_ptrace_all_domains(sysadm_t)
-')
+#tunable_policy(`allow_ptrace',`
+#	domain_ptrace_all_domains(sysadm_t)
+#')
 
 optional_policy(`
 	abrt_admin(sysadm_t, sysadm_r)

@@ -7,6 +7,8 @@ policy_module(confident, 1.0.0)
 #
 #
 
+# First things first, no debugging 
+
 attribute confident_internal_exec_type;
 attribute confident_exec_type;
 
@@ -25,6 +27,8 @@ type confident_exec_t;
 domain_type(confident_exec_t);
 type confident_config_t;
 
+neverallow domain confident_exec_t:process ptrace;
+neverallow domain confident_internal_exec_t:process ptrace;
 # Insert Declarations for service related files
 # needs to accessible by systemctl (and symlinked for runtime servicei starting)
 type confident_service_t;
@@ -44,6 +48,65 @@ portcon tcp 11434 system_u:object_r:confident_port_t:s1
 
 # Allow internal binaries to execute themselves:
 allow confident_internal_exec_t self:file { read execute entrypoint };
+
+# Add additional changes for compute_boot/router_com/compute_worker
+allow confident_exec_t confident_config_t:file { getattr };
+allow confident_exec_t confident_internal_exec_t:file { execute open read };
+allow confident_exec_t confident_internal_exec_t:process { rlimitinh siginh };
+allow confident_exec_t var_t:file { create getattr open write };
+allow confident_internal_exec_t cert_t:dir { open read search };
+allow confident_internal_exec_t cert_t:file { getattr open read };
+allow confident_internal_exec_t cert_t:lnk_file { read };
+allow confident_internal_exec_t confident_bin_t:dir { search };
+allow confident_internal_exec_t confident_exec_t:fd { use };
+allow confident_internal_exec_t confident_internal_exec_t:capability { dac_override };
+allow confident_internal_exec_t confident_internal_exec_t:fifo_file { ioctl read write };
+allow confident_internal_exec_t confident_internal_exec_t:file { execute_no_trans map };
+allow confident_internal_exec_t confident_internal_exec_t:process { getsched sigkill signal signull };
+allow confident_internal_exec_t confident_internal_exec_t:tcp_socket { accept bind connect create getattr getopt listen read setopt write };
+allow confident_internal_exec_t confident_internal_exec_t:udp_socket { connect create getattr read setopt write };
+allow confident_internal_exec_t confident_internal_exec_t:unix_stream_socket { connectto };
+allow confident_internal_exec_t confident_port_t:tcp_socket { name_connect };
+allow confident_internal_exec_t confident_root_t:dir { search };
+allow confident_internal_exec_t configfs_t:dir { add_name create getattr remove_name rmdir search write };
+allow confident_internal_exec_t configfs_t:file { create getattr open read write };
+allow confident_internal_exec_t device_t:chr_file { getattr };
+allow confident_internal_exec_t etc_t:file { getattr open read };
+allow confident_internal_exec_t etc_t:lnk_file { read };
+allow confident_internal_exec_t http_port_t:tcp_socket { name_connect };
+allow confident_internal_exec_t init_runtime_t:dir { search };
+allow confident_internal_exec_t init_t:fd { use };
+allow confident_internal_exec_t init_t:unix_stream_socket { ioctl read write };
+allow confident_internal_exec_t locale_t:dir { search };
+allow confident_internal_exec_t locale_t:file { open read };
+allow confident_internal_exec_t net_conf_t:file { getattr open read };
+allow confident_internal_exec_t node_t:tcp_socket { node_bind };
+allow confident_internal_exec_t router_com_port_t:tcp_socket { name_bind };
+allow confident_internal_exec_t soundd_port_t:tcp_socket { name_connect };
+allow confident_internal_exec_t sysctl_net_t:dir { search };
+allow confident_internal_exec_t sysctl_net_t:file { open read };
+allow confident_internal_exec_t sysctl_t:dir { search };
+allow confident_internal_exec_t sysfs_t:file { open read };
+allow confident_internal_exec_t system_dbusd_runtime_t:dir { search };
+allow confident_internal_exec_t system_dbusd_runtime_t:sock_file { write };
+allow confident_internal_exec_t system_dbusd_t:unix_stream_socket { connectto };
+allow confident_internal_exec_t systemd_resolved_runtime_t:dir { search };
+allow confident_internal_exec_t systemd_resolved_runtime_t:file { getattr open read };
+allow confident_internal_exec_t systemd_unit_t:service { start };
+allow confident_internal_exec_t tmp_t:dir { add_name remove_name search write };
+allow confident_internal_exec_t tmp_t:sock_file { create unlink write };
+allow confident_internal_exec_t tpm_device_t:chr_file { getattr open read write };
+allow confident_internal_exec_t unreserved_port_t:tcp_socket { name_connect };
+allow confident_internal_exec_t usr_t:file { getattr open read };
+allow confident_internal_exec_t var_t:file { open read };
+
+# Additional MODEL perms go here:
+# Ollama additions
+allow initrc_t node_t:tcp_socket { node_bind };
+allow initrc_t confident_port_t:tcp_socket { name_bind };
+allow initrc_t usr_t:dir { add_name create remove_name rmdir write };
+allow initrc_t usr_t:file { create rename unlink write };
+allow confident_internal_exec_t systemd_unit_t:service { start };
 
 # Allow internal binaries ability to load libs:
 allow confident_internal_exec_t ld_so_t:file { read execute map };
