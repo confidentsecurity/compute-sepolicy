@@ -49,6 +49,38 @@ portcon tcp 11434 system_u:object_r:confident_port_t:s1
 # Allow internal binaries to execute themselves:
 allow confident_internal_exec_t self:file { read execute entrypoint };
 
+# Add confident_exec_t (wrapper permissions). 
+# With future changes, these may need to be adjusted into the confident_internal_exec
+allow confident_exec_t etc_t:lnk_file { read };
+allow confident_exec_t http_port_t:tcp_socket { name_connect };
+allow confident_exec_t confident_exec_t:fifo_file { getattr ioctl read write };
+allow confident_exec_t etc_t:file { getattr open read };
+allow confident_exec_t cert_t:dir { search };
+allow confident_exec_t cert_t:file { getattr open read };
+allow confident_exec_t net_conf_t:file { getattr open read };
+allow confident_exec_t shell_exec_t:file { execute map read };
+allow confident_exec_t bin_t:dir { search };
+allow confident_exec_t user_home_dir_t:dir { search };
+allow confident_exec_t confident_exec_t:file { entrypoint };
+allow confident_exec_t var_run_t:dir { add_name create write };
+allow init_t confident_exec_t:process { noatsecure rlimitinh siginh };
+allow init_t confident_bin_t:dir { search };
+allow confident_exec_t init_t:unix_stream_socket { getattr ioctl read write };
+allow confident_exec_t bin_t:file { execute execute_no_trans getattr map open read };
+allow confident_exec_t confident_exec_t:udp_socket { create };
+allow confident_exec_t systemd_resolved_runtime_t:dir { search };
+allow confident_exec_t confident_exec_t:tcp_socket { connect create getattr getopt read setopt write };
+allow confident_exec_t systemd_resolved_runtime_t:file { getattr open read };
+allow confident_exec_t init_t:fd { use };
+allow confident_exec_t locale_t:dir { getattr open read search };
+allow confident_exec_t confident_root_t:dir { search };
+allow confident_exec_t confident_bin_t:dir { search };
+allow confident_exec_t init_runtime_t:dir { search };
+allow init_t confident_root_t:dir { search };
+allow confident_exec_t locale_t:file { getattr map open read };
+allow confident_exec_t locale_t:lnk_file { read };
+allow confident_exec_t var_run_t:file { append create open write };
+
 # Add additional changes for compute_boot/router_com/compute_worker
 allow confident_exec_t confident_config_t:file { getattr };
 allow confident_exec_t confident_internal_exec_t:file { execute open read };
