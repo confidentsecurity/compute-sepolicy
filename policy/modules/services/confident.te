@@ -6,8 +6,10 @@ policy_module(confident, 1.0.0)
 # Declaratiions
 #
 #
-
-# First things first, no debugging 
+# Only system roles can access internal types:
+#
+role system_r types confident_exec_t;
+role system_r types confident_internal_exec_t;
 
 attribute confident_internal_exec_type;
 attribute confident_exec_type;
@@ -131,6 +133,16 @@ allow confident_internal_exec_t tpm_device_t:chr_file { getattr open read write 
 allow confident_internal_exec_t unreserved_port_t:tcp_socket { name_connect };
 allow confident_internal_exec_t usr_t:file { getattr open read };
 allow confident_internal_exec_t var_t:file { open read };
+
+# make-compute-boot script additional permissions to create the var config file
+#
+
+allow initrc_t var_t:dir { add_name };
+allow initrc_t var_t:file { create write open };
+
+# Allow starting services (NOTE: this can be refactored in the future, but for now ollama is spawned by compute_boot so needs this perm)
+#
+allow confident_internal_exec_t systemd_unit_t:service { start };
 
 # Additional MODEL perms go here:
 # Ollama additions
