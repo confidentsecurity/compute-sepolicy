@@ -1,0 +1,6 @@
+# Alloy specific configuration
+allow initrc_t initrc_t:bpf { map_create };
+allow initrc_t var_lib_t:dir { create };
+allow initrc_t systemd_journal_t:file { map };
+allow initrc_t unreserved_port_t:tcp_socket { name_bind };
+allow initrc_t systemd_journal_t:dir { watch };
