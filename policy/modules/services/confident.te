@@ -140,6 +140,10 @@ allow confident_internal_exec_t var_t:file { open read };
 allow initrc_t var_t:dir { add_name };
 allow initrc_t var_t:file { create write open };
 
+# Allow starting services (NOTE: this can be refactored in the future, but for now ollama is spawned by compute_boot so needs this perm)
+#
+allow confident_internal_exec_t systemd_unit_t:service { start };
+
 # Additional MODEL perms go here:
 # Ollama additions
 allow initrc_t node_t:tcp_socket { node_bind };
