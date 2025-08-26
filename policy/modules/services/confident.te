@@ -182,6 +182,176 @@ allow confident_exec_t confident_internal_exec_t:process { transition };
 allow initrc_t confident_exec_t:file { read execute open };
 allow init_t confident_exec_t:file { read execute open };
 
+# Trial additions for now for enforcing boot.
+#
+#
+# Remove apt_t perms as apt won't be included in the final instance
+allow apt_t apt_t:capability { dac_read_search net_admin sys_nice };
+allow apt_t apt_tmpfs_t:file { execute map };
+allow apt_t apt_t:process { getsched setfscreate setsched };
+allow apt_t apt_var_cache_t:file { map };
+allow apt_t apt_var_lib_t:dir { setattr watch };
+allow apt_t bin_t:dir { watch };
+allow apt_t cert_t:dir { search };
+allow apt_t cert_t:file { getattr open read };
+allow apt_t dpkg_var_lib_t:dir { add_name write };
+allow apt_t dpkg_var_lib_t:file { create };
+allow apt_t etc_t:dir { watch };
+allow apt_t init_t:dir { search };
+allow apt_t init_t:file { getattr ioctl open read };
+allow apt_t init_t:lnk_file { read };
+allow apt_t init_t:unix_stream_socket { connectto };
+allow apt_t kernel_t:unix_dgram_socket { sendto };
+allow apt_t syslogd_runtime_t:dir { search };
+allow apt_t systemd_logind_inhibit_runtime_t:fifo_file { write };
+allow apt_t systemd_logind_t:fd { use };
+allow apt_t systemd_unit_t:service { start status };
+allow apt_t user_runtime_root_t:dir { search };
+allow apt_t var_lib_t:file { create getattr ioctl lock map open read rename setattr unlink write };
+allow apt_t var_run_t:dir { add_name remove_name write };
+allow apt_t var_run_t:file { create getattr ioctl lock open read unlink write };
+
+# minor chronyd perms
+allow chronyc_t chronyc_t:capability { dac_read_search };
+allow chronyd_t chronyd_t:capability { dac_read_search };
+allow chronyd_t kernel_t:unix_dgram_socket { sendto };
+allow chronyd_t syslogd_runtime_t:dir { search };
+
+# Additional confident_exec changes since last policy
+allow confident_exec_t confident_config_t:file { open read };
+allow confident_exec_t confident_etc_t:dir { search };
+allow confident_exec_t confident_exec_t:capability { net_admin };
+allow confident_exec_t confident_internal_exec_t:process { noatsecure };
+allow confident_exec_t init_runtime_t:sock_file { write };
+allow confident_exec_t init_t:dir { search };
+allow confident_exec_t init_t:file { read };
+allow confident_exec_t init_t:lnk_file { read };
+allow confident_exec_t init_t:system { reload };
+allow confident_exec_t init_t:unix_stream_socket { connectto };
+allow confident_exec_t systemd_unit_t:service { start status };
+allow confident_exec_t var_run_t:file { getattr read };
+allow confident_exec_t var_t:dir { add_name create read write };
+allow confident_internal_exec_t init_t:dbus { send_msg };
+allow confident_internal_exec_t system_dbusd_t:dbus { send_msg };
+
+# Service related (possibly non-essential)
+allow crond_t kernel_t:unix_dgram_socket { sendto };
+allow dhcpc_t kernel_t:unix_dgram_socket { sendto };
+allow dhcpc_t syslogd_runtime_t:dir { search };
+allow dpkg_t locale_t:file { map };
+allow getty_t getty_t:capability2 { checkpoint_restore };
+
+# System Startup services
+allow initrc_t apt_var_lib_t:dir { add_name write };
+allow initrc_t apt_var_lib_t:file { create lock open read write };
+allow initrc_t backup_store_t:dir { add_name remove_name write };
+allow initrc_t backup_store_t:file { create open rename setattr write };
+allow initrc_t confident_bin_t:dir { search };
+allow initrc_t confident_config_t:file { getattr open read };
+allow initrc_t confident_etc_t:dir { search };
+allow initrc_t confident_root_t:dir { getattr search };
+allow initrc_t dpkg_t:process2 { nnp_transition };
+allow initrc_t init_runtime_t:file { rename setattr };
+allow initrc_t init_runtime_t:lnk_file { unlink };
+allow initrc_t nsfs_t:file { getattr };
+allow initrc_t security_t:file { map };
+allow initrc_t security_t:security { compute_av };
+allow initrc_t sysctl_irq_t:dir { add_name write };
+allow initrc_t sysctl_irq_t:file { create };
+allow initrc_t systemd_networkd_t:dbus { send_msg };
+allow initrc_t tmpfs_t:file { execute map read write };
+allow initrc_t usr_t:file { execute };
+allow initrc_t var_lib_t:dir { setattr };
+allow initrc_t var_lib_t:file { map };
+allow initrc_t var_lib_t:lnk_file { create read unlink };
+allow initrc_t var_run_t:sock_file { write };
+allow initrc_t var_t:dir { remove_name setattr write };
+allow initrc_t var_t:file { ioctl lock read rename unlink };
+
+# additional boot permissions
+allow init_t chronyd_var_lib_t:dir { mounton };
+allow init_t confident_config_t:file { getattr open read };
+allow init_t confident_etc_t:dir { search };
+allow init_t confident_internal_exec_t:dbus { send_msg };
+allow init_t console_device_t:chr_file { setattr };
+allow init_t http_port_t:tcp_socket { name_connect };
+allow init_t init_var_lib_t:file { setattr };
+allow init_t lib_t:file { execute_no_trans };
+allow init_t systemd_notify_t:fd { use };
+allow init_t systemd_notify_t:fifo_file { write };
+allow init_t systemd_resolved_runtime_t:dir { mounton };
+allow init_t tmp_t:dir { relabelfrom relabelto };
+allow init_t tmp_t:file { create open read unlink write };
+allow init_t tty_device_t:chr_file { setattr };
+allow init_t unlabeled_t:dir { mounton };
+allow init_t usr_t:file { open read };
+allow init_t uuidd_runtime_t:sock_file { write };
+allow init_t var_log_t:dir { add_name write };
+allow init_t var_log_t:file { create };
+allow init_t var_run_t:sock_file { setattr write };
+allow init_t var_spool_t:dir { mounton };
+allow init_t var_t:file { open read };
+allow kernel_t initrc_t:fd { use };
+allow kernel_t unlabeled_t:file { read };
+
+
+allow mount_t tmp_t:file { open read write };
+allow mount_t unlabeled_t:file { getattr };
+allow ntpd_t kernel_t:unix_dgram_socket { sendto };
+allow ntpd_t syslogd_runtime_t:dir { search };
+allow policykit_t kernel_t:unix_dgram_socket { sendto };
+allow policykit_t syslogd_runtime_t:dir { search };
+allow rpcd_t kernel_t:unix_dgram_socket { sendto };
+allow rpcd_t syslogd_runtime_t:dir { search };
+allow sysadm_t auditd_log_t:dir { getattr read search };
+allow sysadm_t auditd_log_t:file { getattr read };
+allow sysctl_irq_t proc_t:filesystem { associate };
+allow syslogd_t init_t:unix_stream_socket { connectto };
+allow syslogd_t kernel_t:unix_stream_socket { setopt shutdown };
+allow systemd_detect_virt_t devlog_t:sock_file { write };
+allow systemd_detect_virt_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_detect_virt_t syslogd_runtime_t:dir { search };
+allow systemd_detect_virt_t systemd_detect_virt_t:capability { net_admin };
+allow systemd_detect_virt_t systemd_detect_virt_t:unix_dgram_socket { connect create getopt setopt };
+allow systemd_generator_t fixed_disk_device_t:blk_file { getattr read };
+allow systemd_generator_t kmsg_device_t:chr_file { write };
+allow systemd_generator_t lib_t:file { execute_no_trans };
+allow systemd_generator_t udev_runtime_t:file { getattr open read };
+allow systemd_generator_t unlabeled_t:dir { getattr search };
+allow systemd_generator_t var_run_t:file { append getattr open read write };
+allow systemd_logind_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_logind_t syslogd_runtime_t:dir { search };
+allow systemd_networkd_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_networkd_t syslogd_runtime_t:dir { search };
+allow systemd_notify_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_notify_t systemd_notify_t:capability { net_admin };
+allow systemd_notify_t systemd_notify_t:unix_dgram_socket { create getopt setopt write };
+allow systemd_resolved_t cgroup_t:dir { search };
+allow systemd_resolved_t cgroup_t:filesystem { getattr };
+allow systemd_resolved_t fs_t:filesystem { getattr };
+allow systemd_resolved_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_resolved_t syslogd_runtime_t:dir { search };
+allow systemd_resolved_t systemd_resolved_runtime_t:sock_file { create };
+allow systemd_sessions_t cgroup_t:dir { search };
+allow systemd_sessions_t cgroup_t:filesystem { getattr };
+allow systemd_sessions_t fs_t:filesystem { getattr };
+allow systemd_sessions_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_sessions_t syslogd_runtime_t:dir { search };
+allow systemd_tmpfiles_t cgroup_t:filesystem { getattr };
+allow systemd_tmpfiles_t kernel_t:unix_dgram_socket { sendto };
+allow systemd_tmpfiles_t syslogd_runtime_t:dir { search };
+allow systemd_tmpfiles_t tmpfs_t:file { getattr ioctl open read };
+allow systemd_user_runtime_dir_t cgroup_t:dir { search };
+allow systemd_user_runtime_dir_t cgroup_t:filesystem { getattr };
+allow systemd_user_runtime_dir_t fs_t:filesystem { getattr };
+
+# Console setup for keyboard 
+allow udev_t consolesetup_conf_t:dir { search };
+allow udev_t consolesetup_conf_t:file { execute execute_no_trans open read };
+allow udev_t consolesetup_runtime_t:dir { search };
+allow udev_t consolesetup_runtime_t:file { getattr };
+allow udev_t kernel_t:unix_dgram_socket { sendto };
+
 #TESTING, remove when finished. colin note
 # This allows a shell to become confident binaries domain (to generate auditd logs)
 ifdef(`enable_user_transition', `
