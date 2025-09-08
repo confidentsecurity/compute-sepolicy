@@ -13,8 +13,8 @@
 /opt/confidentsec/bin/compute-boot-secret-wrapper	--	gen_context(system_u:object_r:confident_exec_t,s0)
 
 /opt/confidentsec/etc/compute_boot\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
-/opt/confidentsec/etc/compute_boot\.yaml\.temp	--	gen_context(system_u:object_r:confident_config_t,s0)
-/opt/confidentsec/etc/router_com\.yaml\.temp	--	gen_context(system_u:object_r:confident_config_t,s0)
+/opt/confidentsec/etc/compute_boot\.yaml\.temp*	--	gen_context(system_u:object_r:confident_config_t,s0)
+/opt/confidentsec/etc/router_com\.yaml\.temp*	--	gen_context(system_u:object_r:confident_config_t,s0)
 /opt/confidentsec/etc/system\.conf	--	gen_context(system_u:object_r:confident_config_t,s0)
 /opt/confidentsec/etc/router_com\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
 

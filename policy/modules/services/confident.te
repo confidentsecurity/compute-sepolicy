@@ -46,7 +46,7 @@ type confident_ollama_exec_t;
 type confident_port_t;
 typeattribute confident_port_t reserved_port_type;
 # Change this port type to the Openllm when implemented
-portcon tcp 11434 system_u:object_r:confident_port_t:s1
+portcon tcp 11434 gen_context(system_u:object_r:confident_port_t, s0)
 
 # Allow internal binaries to execute themselves:
 allow confident_internal_exec_t self:file { read execute entrypoint };
@@ -164,7 +164,7 @@ allow confident_internal_exec_t confident_port_t:tcp_socket { connect create rea
 # Allowing our router_comm to bind to the external facing requests.
 type router_com_port_t;
 typeattribute router_com_port_t reserved_port_type;
-portcon tcp 8081 system_u:object_r:router_com_port_t:s0
+portcon tcp 8081 gen_context(system_u:object_r:router_com_port_t,s0)
 
 ## Type transitions table (from initrc/init to confident shell wrappers -> confident_internal)
 type_transition initrc_t confident_exec_t:process confident_exec_t;
@@ -186,30 +186,30 @@ allow init_t confident_exec_t:file { read execute open };
 #
 #
 # Remove apt_t perms as apt won't be included in the final instance
-allow apt_t apt_t:capability { dac_read_search net_admin sys_nice };
-allow apt_t apt_tmpfs_t:file { execute map };
-allow apt_t apt_t:process { getsched setfscreate setsched };
-allow apt_t apt_var_cache_t:file { map };
-allow apt_t apt_var_lib_t:dir { setattr watch };
-allow apt_t bin_t:dir { watch };
-allow apt_t cert_t:dir { search };
-allow apt_t cert_t:file { getattr open read };
-allow apt_t dpkg_var_lib_t:dir { add_name write };
-allow apt_t dpkg_var_lib_t:file { create };
-allow apt_t etc_t:dir { watch };
-allow apt_t init_t:dir { search };
-allow apt_t init_t:file { getattr ioctl open read };
-allow apt_t init_t:lnk_file { read };
-allow apt_t init_t:unix_stream_socket { connectto };
-allow apt_t kernel_t:unix_dgram_socket { sendto };
-allow apt_t syslogd_runtime_t:dir { search };
-allow apt_t systemd_logind_inhibit_runtime_t:fifo_file { write };
-allow apt_t systemd_logind_t:fd { use };
-allow apt_t systemd_unit_t:service { start status };
-allow apt_t user_runtime_root_t:dir { search };
-allow apt_t var_lib_t:file { create getattr ioctl lock map open read rename setattr unlink write };
-allow apt_t var_run_t:dir { add_name remove_name write };
-allow apt_t var_run_t:file { create getattr ioctl lock open read unlink write };
+#allow apt_t apt_t:capability { dac_read_search net_admin sys_nice };
+#allow apt_t apt_tmpfs_t:file { execute map };
+#allow apt_t apt_t:process { getsched setfscreate setsched };
+#allow apt_t apt_var_cache_t:file { map };
+#allow apt_t apt_var_lib_t:dir { setattr watch };
+#allow apt_t bin_t:dir { watch };
+#allow apt_t cert_t:dir { search };
+#allow apt_t cert_t:file { getattr open read };
+#allow apt_t dpkg_var_lib_t:dir { add_name write };
+#allow apt_t dpkg_var_lib_t:file { create };
+#allow apt_t etc_t:dir { watch };
+#allow apt_t init_t:dir { search };
+#allow apt_t init_t:file { getattr ioctl open read };
+#allow apt_t init_t:lnk_file { read };
+#allow apt_t init_t:unix_stream_socket { connectto };
+#allow apt_t kernel_t:unix_dgram_socket { sendto };
+#allow apt_t syslogd_runtime_t:dir { search };
+#allow apt_t systemd_logind_inhibit_runtime_t:fifo_file { write };
+#allow apt_t systemd_logind_t:fd { use };
+#allow apt_t systemd_unit_t:service { start status };
+#allow apt_t user_runtime_root_t:dir { search };
+#allow apt_t var_lib_t:file { create getattr ioctl lock map open read rename setattr unlink write };
+#allow apt_t var_run_t:dir { add_name remove_name write };
+#allow apt_t var_run_t:file { create getattr ioctl lock open read unlink write };
 
 # minor chronyd perms
 allow chronyc_t chronyc_t:capability { dac_read_search };
@@ -231,6 +231,7 @@ allow confident_exec_t init_t:unix_stream_socket { connectto };
 allow confident_exec_t systemd_unit_t:service { start status };
 allow confident_exec_t var_run_t:file { getattr read };
 allow confident_exec_t var_t:dir { add_name create read write };
+allow confident_exec_t confident_root_t:dir getattr;
 allow confident_internal_exec_t init_t:dbus { send_msg };
 allow confident_internal_exec_t system_dbusd_t:dbus { send_msg };
 
@@ -283,7 +284,7 @@ allow init_t systemd_resolved_runtime_t:dir { mounton };
 allow init_t tmp_t:dir { relabelfrom relabelto };
 allow init_t tmp_t:file { create open read unlink write };
 allow init_t tty_device_t:chr_file { setattr };
-allow init_t unlabeled_t:dir { mounton };
+allow init_t verity_metadata_t:dir { mounton };
 allow init_t usr_t:file { open read };
 allow init_t uuidd_runtime_t:sock_file { write };
 allow init_t var_log_t:dir { add_name write };
@@ -292,11 +293,11 @@ allow init_t var_run_t:sock_file { setattr write };
 allow init_t var_spool_t:dir { mounton };
 allow init_t var_t:file { open read };
 allow kernel_t initrc_t:fd { use };
-allow kernel_t unlabeled_t:file { read };
+allow kernel_t verity_metadata_t:file { read };
 
 
 allow mount_t tmp_t:file { open read write };
-allow mount_t unlabeled_t:file { getattr };
+allow mount_t verity_metadata_t:file { getattr };
 allow ntpd_t kernel_t:unix_dgram_socket { sendto };
 allow ntpd_t syslogd_runtime_t:dir { search };
 allow policykit_t kernel_t:unix_dgram_socket { sendto };
@@ -317,7 +318,7 @@ allow systemd_generator_t fixed_disk_device_t:blk_file { getattr read };
 allow systemd_generator_t kmsg_device_t:chr_file { write };
 allow systemd_generator_t lib_t:file { execute_no_trans };
 allow systemd_generator_t udev_runtime_t:file { getattr open read };
-allow systemd_generator_t unlabeled_t:dir { getattr search };
+allow systemd_generator_t verity_metadata_t:dir { getattr search };
 allow systemd_generator_t var_run_t:file { append getattr open read write };
 allow systemd_logind_t kernel_t:unix_dgram_socket { sendto };
 allow systemd_logind_t syslogd_runtime_t:dir { search };
@@ -352,48 +353,3 @@ allow udev_t consolesetup_runtime_t:dir { search };
 allow udev_t consolesetup_runtime_t:file { getattr };
 allow udev_t kernel_t:unix_dgram_socket { sendto };
 
-#TESTING, remove when finished. colin note
-# This allows a shell to become confident binaries domain (to generate auditd logs)
-ifdef(`enable_user_transition', `
-  allow user_t confident_internal_exec_t:file entrypoint;
-  allow user_t confident_exec_t:file entrypoint;
-  type_transition user_t confident_internal_exec_t:process confident_internal_exec_t;
-  type_transition user_t confident_exec_t:process confident_exec_t;
-')
-
-# turned off for the time being. 
-ifdef(`enable_administrator_sshd', `
-allow ssh_keygen_t locale_t:dir search;
-allow ssh_keygen_t locale_t:file { getattr map open read };
-allow ssh_keygen_t locale_t:lnk_file read;
-
-allow sshd_t apt_exec_t:file getattr;
-allow sshd_t apt_var_cache_t:dir { getattr search };
-allow sshd_t apt_var_cache_t:file { getattr map open read };
-allow sshd_t apt_var_lib_t:dir { getattr open read search };
-allow sshd_t apt_var_lib_t:file { getattr open read };
-allow sshd_t bin_t:file { execute execute_no_trans ioctl map open read };
-allow sshd_t boot_t:dir search;
-allow sshd_t dpkg_exec_t:file { execute execute_no_trans getattr map open read };
-allow sshd_t dpkg_var_lib_t:dir search;
-allow sshd_t dpkg_var_lib_t:file { getattr open read };
-allow sshd_t fsadm_exec_t:file { execute execute_no_trans getattr map open read };
-allow sshd_t kernel_t:system module_request;
-allow sshd_t lib_t:file execute_no_trans;
-allow sshd_t loop_control_device_t:chr_file getattr;
-allow sshd_t mount_exec_t:file { execute execute_no_trans getattr map open read };
-allow sshd_t mount_runtime_t:dir search;
-allow sshd_t mount_runtime_t:file { getattr open read };
-allow sshd_t self:capability dac_override;
-allow sshd_t self:process signull;
-allow sshd_t shell_exec_t:file execute_no_trans;
-
-allow sshd_t user_home_dir_t:dir { add_name create write };
-allow sshd_t user_home_dir_t:file { create getattr open write };
-allow sshd_t usr_t:file { execute execute_no_trans };
-allow sshd_t var_lib_t:dir { add_name write };
-allow sshd_t var_lib_t:file { append create getattr ioctl open read setattr write };
-allow sshd_t var_log_t:dir { add_name write };
-allow sshd_t var_log_t:file { append create getattr ioctl open };
-allow sshd_t var_t:file { getattr open read };
-')

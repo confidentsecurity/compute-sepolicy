@@ -1,0 +1,379 @@
+policy_module(veritysetup_label, 1.0.0)
+
+type verity_metadata_t;
+files_type(verity_metadata_t)
+
+allow initrc_t verity_metadata_t:dir  { search getattr };
+allow initrc_t verity_metadata_t:file { open read write getattr };
+
+allow init_t efivarfs_t:dir  { search getattr };
+allow init_t efivarfs_t:file { open read getattr };
+
+allow init_t sysctl_fs_t:file { open write getattr };
+
+
+allow systemd_generator_t var_run_t:dir  { create add_name write search getattr };
+allow systemd_generator_t var_run_t:file { create open write append getattr setattr };
+
+allow systemd_generator_t systemd_detect_virt_exec_t:file { read open execute map getattr execute_no_trans };
+
+allow kmod_t tmpfs_t:file { create open write append getattr setattr };
+
+
+allow lvm_t cgroup_t:filesystem getattr;
+
+allow lvm_t root_t:file { open read getattr };
+
+allow lvm_t cert_t:dir { search getattr };
+allow lvm_t cert_t:file { open read getattr };
+
+allow lvm_t var_run_t:dir { create add_name write search getattr };
+allow lvm_t init_t:key { search read view };
+
+type iscsi_netif_handler_exec_t;
+files_type(iscsi_netif_handler_exec_t)
+
+#allow initrc_t verity_metadata_t:dir  { search getattr };
+#allow initrc_t verity_metadata_t:file { open read getattr };
+
+#allow systemd_tmpfiles_t unlabeled_t:dir { search getattr };
+
+allow systemd_modules_load_t cgroup_t:filesystem getattr;
+allow systemd_modules_load_t fs_t:filesystem getattr;
+
+allow initrc_t self:capability sys_admin;
+
+allow udev_t consolesetup_conf_t:file { open read getattr ioctl };
+
+allow init_t wireless_device_t:chr_file { open read write getattr };
+
+allow init_t default_t:dir { create add_name write search getattr };
+
+allow sulogin_t self:capability2 checkpoint_restore;
+
+
+#allow systemd_tmpfiles_t unlabeled_t:dir { search open getattr };
+allow systemd_tmpfiles_t var_log_t:file { relabelfrom relabelto };
+
+allow udev_t iscsi_netif_handler_exec_t:file { read open execute map getattr };
+
+allow udev_t sysctl_fs_t:dir search;
+
+allow udev_t systemd_unit_t:dir { read search getattr };
+allow udev_t efivarfs_t:dir search;
+
+allow udev_t consolesetup_runtime_t:dir { getattr write add_name create };
+
+allow initrc_t fixed_disk_device_t:blk_file { open read getattr ioctl };
+
+allow lvm_t cert_t:file { open read getattr };
+
+allow consolesetup_t proc_t:file { open read getattr };
+
+allow systemd_binfmt_t fs_t:filesystem getattr;
+
+allow kernel_t var_lib_t:file { open read getattr };
+
+
+files_type(iscsi_netif_handler_exec_t)
+
+allow udev_t iscsi_netif_handler_exec_t:file
+    { read open execute map getattr execute_no_trans };
+
+allow udev_t sysctl_fs_t:file { open read getattr };
+
+allow udev_t self:process setrlimit;
+
+allow udev_t systemd_unit_t:dir { read search open getattr };
+allow udev_t systemd_networkd_unit_t:dir { search getattr };
+
+allow udev_t consolesetup_runtime_t:file { create open write getattr };
+
+
+type veritysetup_exec_t;
+type veritysetup_t;
+files_type(veritysetup_exec_t)
+
+typeattribute veritysetup_t domain;
+typeattribute veritysetup_t daemon;           
+allow veritysetup_t self:process { getattr }; 
+allow veritysetup_t veritysetup_exec_t:file { read open execute map getattr };
+allow initrc_t veritysetup_exec_t:file { read open execute map getattr };
+type_transition initrc_t veritysetup_exec_t:process veritysetup_t;
+
+allow veritysetup_t loop_control_device_t:chr_file { open read getattr ioctl };
+allow veritysetup_t fixed_disk_device_t:blk_file   { open read write getattr ioctl };
+
+allow veritysetup_t verity_metadata_t:dir  { search getattr };
+allow veritysetup_t verity_metadata_t:file { open read write getattr };
+
+allow veritysetup_t self:sem { create read write unix_read unix_write };
+
+allow init_t veritysetup_exec_t:file { read open execute map getattr };
+allow veritysetup_t veritysetup_exec_t:file entrypoint;
+type_transition init_t veritysetup_exec_t:process veritysetup_t;
+
+allow veritysetup_t loop_control_device_t:chr_file { open read getattr ioctl };
+allow veritysetup_t fixed_disk_device_t:blk_file   { open read write getattr ioctl };
+
+allow udev_t iscsi_netif_handler_exec_t:file { read open execute map getattr execute_no_trans };
+
+role system_r types veritysetup_t;
+
+allow init_t veritysetup_exec_t:file { read open execute map getattr };
+allow veritysetup_t veritysetup_exec_t:file entrypoint;
+type_transition init_t veritysetup_exec_t:process veritysetup_t;
+allow init_t veritysetup_t:process { transition noatsecure rlimitinh siginh };
+
+allow veritysetup_t security_t:filesystem getattr;
+allow veritysetup_t selinux_config_t:dir search;
+allow veritysetup_t init_runtime_t:dir search;
+allow veritysetup_t sysctl_t:dir search;
+allow veritysetup_t sysctl_kernel_t:dir search;
+allow veritysetup_t sysctl_kernel_t:file { open read getattr ioctl };
+
+allow veritysetup_t init_t:dir search;
+allow veritysetup_t init_t:file { open read getattr ioctl};
+
+allow veritysetup_t cgroup_t:filesystem getattr;
+allow veritysetup_t proc_t:file { open read getattr ioctl };
+allow veritysetup_t fs_t:filesystem getattr;
+allow veritysetup_t self:unix_dgram_socket { create getopt setopt };
+
+allow veritysetup_t self:capability net_admin;
+allow veritysetup_t self:unix_dgram_socket connect;
+allow veritysetup_t kernel_t:unix_dgram_socket sendto;
+allow veritysetup_t syslogd_runtime_t:dir search;
+allow veritysetup_t devlog_t:sock_file write;
+allow veritysetup_t lvm_control_t:chr_file { open read write getattr ioctl};
+allow veritysetup_t kernel_t:system ipc_info;
+allow veritysetup_t udev_runtime_t:dir search;
+allow veritysetup_t self:unix_dgram_socket write;
+allow veritysetup_t urandom_device_t:chr_file { open read getattr };
+allow veritysetup_t random_device_t:chr_file { open read getattr };
+
+allow veritysetup_t cert_t:dir search;
+allow veritysetup_t cert_t:file { open read getattr };
+allow veritysetup_t device_t:filesystem getattr;
+allow kernel_t veritysetup_t:fd use;
+allow veritysetup_t debugfs_t:dir search;
+allow veritysetup_t self:sem associate;
+allow lvm_t veritysetup_t:sem associate;
+
+allow veritysetup_t self:capability sys_admin;
+allow lvm_t veritysetup_t:sem { read write unix_read unix_write };
+allow veritysetup_t self:sem destroy;
+allow veritysetup_t sysfs_t:lnk_file read;
+allow veritysetup_t sysfs_t:file { open read getattr };
+
+allow udev_t lib_t:file execute_no_trans;
+
+
+
+#============= dpkg_script_t ==============
+allow dpkg_script_t init_t:fd use;
+allow dpkg_script_t init_t:unix_stream_socket { append read };
+allow dpkg_script_t initrc_t:fifo_file { getattr ioctl write };
+
+#============= init_t ==============
+allow init_t var_t:dir { add_name remove_name write };
+allow init_t var_t:file { create lock map rename unlink write };
+
+#============= mandb_t ==============
+allow mandb_t tmpfs_t:dir search;
+
+#============= policykit_t ==============
+allow policykit_t systemd_hostnamed_t:dbus send_msg;
+
+#============= ssh_keygen_t ==============
+allow ssh_keygen_t locale_t:dir search;
+allow ssh_keygen_t locale_t:file { getattr map open read };
+allow ssh_keygen_t locale_t:lnk_file read;
+
+#============= system_cronjob_t ==============
+allow system_cronjob_t crack_db_t:file { open read };
+
+#============= systemd_hostnamed_t ==============
+allow systemd_hostnamed_t fs_t:filesystem getattr;
+
+allow init_t systemd_binfmt_exec_t:file { read open execute map getattr };
+allow systemd_binfmt_t systemd_binfmt_exec_t:file entrypoint;
+type_transition init_t systemd_binfmt_exec_t:process systemd_binfmt_t;
+
+allow systemd_binfmt_t self:capability sys_admin;
+allow systemd_binfmt_t sysctl_fs_t:dir { search getattr mounton };
+allow systemd_binfmt_t binfmt_misc_fs_t:filesystem { getattr mount remount unmount };
+allow systemd_binfmt_t binfmt_misc_fs_t:dir { search write getattr };
+allow systemd_binfmt_t binfmt_misc_fs_t:file { open read write getattr };
+
+allow system_dbusd_t unlabeled_t:dir { search getattr };
+
+allow initrc_t init_runtime_t:dir { search add_name write getattr };
+allow initrc_t init_runtime_t:file { create open write getattr setattr };
+allow initrc_t udev_t:process noatsecure;
+
+
+#============= apt_t ==============
+allow apt_t dpkg_t:process { noatsecure rlimitinh siginh };
+allow apt_t selinux_config_t:dir search;
+allow apt_t user_home_dir_t:dir search;
+
+#============= auditctl_t ==============
+allow auditctl_t auditd_etc_t:file map;
+
+#============= confident_exec_t ==============
+allow confident_exec_t security_t:filesystem getattr;
+allow confident_exec_t selinux_config_t:dir search;
+
+#============= getty_t ==============
+allow getty_t local_login_t:process { noatsecure rlimitinh siginh };
+
+#============= init_t ==============
+allow init_t apt_t:process noatsecure;
+allow init_t chronyd_t:process { noatsecure siginh };
+allow init_t crond_t:process { noatsecure siginh };
+allow init_t getty_t:process noatsecure;
+allow init_t initrc_t:process { noatsecure siginh };
+allow init_t kmod_t:process noatsecure;
+allow init_t logrotate_t:process noatsecure;
+allow init_t mount_t:process noatsecure;
+allow init_t ntpd_t:process noatsecure;
+allow init_t plymouth_t:process noatsecure;
+allow init_t policykit_t:process { noatsecure siginh };
+allow init_t rpcbind_t:process { noatsecure siginh };
+allow init_t rpcd_t:process { noatsecure siginh };
+#allow init_t shadow_t:file { open read };
+allow init_t sshd_t:process { noatsecure siginh };
+allow init_t syslogd_t:process { noatsecure siginh };
+allow init_t system_dbusd_t:process noatsecure;
+allow init_t systemd_detect_virt_t:process { noatsecure siginh };
+allow init_t systemd_generator_t:process noatsecure;
+allow init_t systemd_hostnamed_t:process { noatsecure siginh };
+allow init_t systemd_logind_t:process { noatsecure siginh };
+allow init_t systemd_networkd_t:process noatsecure;
+allow init_t systemd_resolved_t:process noatsecure;
+allow init_t systemd_sessions_t:process noatsecure;
+allow init_t systemd_user_runtime_dir_t:process noatsecure;
+
+#============= initrc_t ==============
+allow initrc_t apt_t:process { noatsecure rlimitinh };
+allow initrc_t auditctl_t:process { noatsecure rlimitinh siginh };
+allow initrc_t chronyc_t:process { noatsecure rlimitinh };
+allow initrc_t dhcpc_t:process { noatsecure rlimitinh };
+allow initrc_t dpkg_t:process { noatsecure rlimitinh siginh };
+allow initrc_t fsadm_t:process { noatsecure rlimitinh siginh };
+allow initrc_t groupadd_t:process { noatsecure rlimitinh siginh };
+allow initrc_t ifconfig_t:process { noatsecure rlimitinh siginh };
+allow initrc_t init_runtime_t:file write;
+allow initrc_t lvm_t:process { noatsecure rlimitinh siginh };
+allow initrc_t plymouth_t:process { noatsecure rlimitinh siginh };
+allow initrc_t security_t:file write;
+allow initrc_t security_t:security check_context;
+allow initrc_t self:passwd passwd;
+allow initrc_t self:process { execmem getcap };
+allow initrc_t setfiles_t:process { noatsecure rlimitinh siginh };
+#allow initrc_t shadow_t:file { ioctl open read };
+#allow initrc_t ssh_home_t:dir { add_name remove_name setattr write };
+#allow initrc_t ssh_home_t:file { create ioctl open read rename setattr unlink write };
+#allow initrc_t ssh_keygen_t:process { noatsecure rlimitinh siginh };
+allow initrc_t systemd_detect_virt_t:process { noatsecure rlimitinh };
+allow initrc_t systemd_notify_t:process { noatsecure rlimitinh };
+allow initrc_t udev_t:process { noatsecure rlimitinh };
+
+#============= kernel_t ==============
+allow kernel_t kmod_t:process { noatsecure rlimitinh siginh };
+
+#============= local_login_t ==============
+#allow local_login_t apt_var_cache_t:dir { add_name getattr remove_name search write };
+#allow local_login_t apt_var_cache_t:file { create getattr open read rename setattr unlink write };
+#allow local_login_t apt_var_lib_t:dir { getattr open read search };
+#allow local_login_t apt_var_lib_t:file { getattr open read };
+#allow local_login_t bin_t:file { execute execute_no_trans map };
+#allow local_login_t dpkg_exec_t:file { execute execute_no_trans map };
+#allow local_login_t dpkg_var_lib_t:dir search;
+#allow local_login_t fixed_disk_device_t:blk_file { getattr ioctl open read };
+#allow local_login_t fsadm_exec_t:file { execute execute_no_trans map };
+#allow local_login_t http_port_t:tcp_socket name_connect;
+#allow local_login_t kernel_t:system module_request;
+#allow local_login_t lib_t:file execute_no_trans;
+#allow local_login_t mount_exec_t:file { execute execute_no_trans map };
+#allow local_login_t mount_runtime_t:dir search;
+#allow local_login_t self:capability net_admin;
+#allow local_login_t self:process getsched;
+##allow local_login_t shadow_t:file { getattr open read };
+#allow local_login_t shell_exec_t:file execute_no_trans;
+#allow local_login_t sysadm_t:process { noatsecure rlimitinh siginh };
+#allow local_login_t usr_t:file { execute execute_no_trans };
+#allow local_login_t var_lib_t:dir { add_name write };
+#allow local_login_t var_lib_t:file { append create getattr ioctl open read write };
+#allow local_login_t var_run_t:dir { add_name remove_name write };
+#allow local_login_t var_run_t:file { create getattr open read rename write };
+#allow local_login_t var_t:file { getattr open read };
+
+#============= ntpd_t ==============
+allow ntpd_t selinux_config_t:dir search;
+
+#============= policykit_t ==============
+allow policykit_t security_t:filesystem getattr;
+
+#!!!! This avc can be allowed using the boolean 'allow_kerberos'
+allow policykit_t selinux_config_t:dir search;
+
+#============= sysadm_t ==============
+allow sysadm_t auditd_exec_t:file execute;
+allow sysadm_t auditd_initrc_exec_t:file execute;
+allow sysadm_t initrc_exec_t:file execute;
+allow sysadm_t iscsi_initrc_exec_t:file execute;
+allow sysadm_t rpcbind_initrc_exec_t:file execute;
+allow sysadm_t self:process setrlimit;
+allow sysadm_t uuidd_initrc_exec_t:file execute;
+allow sysadm_t xdm_exec_t:file execute;
+
+#============= systemd_detect_virt_t ==============
+allow systemd_detect_virt_t security_t:filesystem getattr;
+allow systemd_detect_virt_t selinux_config_t:dir search;
+
+#============= systemd_hostnamed_t ==============
+allow systemd_hostnamed_t security_t:filesystem getattr;
+allow systemd_hostnamed_t selinux_config_t:file { getattr open read };
+
+#============= systemd_networkd_t ==============
+allow systemd_networkd_t security_t:filesystem getattr;
+allow systemd_networkd_t selinux_config_t:dir search;
+allow systemd_networkd_t sysfs_t:filesystem getattr;
+
+#============= systemd_notify_t ==============
+allow systemd_notify_t security_t:filesystem getattr;
+allow systemd_notify_t selinux_config_t:dir search;
+
+#============= systemd_resolved_t ==============
+
+#!!!! This avc can be allowed using the boolean 'authlogin_nsswitch_use_ldap'
+allow systemd_resolved_t cert_t:dir search;
+
+#!!!! This avc can be allowed using the boolean 'authlogin_nsswitch_use_ldap'
+allow systemd_resolved_t cert_t:file { getattr open read };
+allow systemd_resolved_t security_t:filesystem getattr;
+allow systemd_resolved_t selinux_config_t:file { getattr open read };
+
+#============= systemd_sessions_t ==============
+allow systemd_sessions_t self:capability net_admin;
+
+#============= systemd_user_runtime_dir_t ==============
+allow systemd_user_runtime_dir_t self:capability net_admin;
+
+allow init_t consolesetup_t:process { noatsecure siginh };
+allow init_t lvm_t:process noatsecure;
+allow init_t systemd_modules_load_t:process { noatsecure siginh };
+allow init_t udev_t:process { noatsecure siginh };
+
+allow initrc_t sulogin_t:process { noatsecure rlimitinh siginh };
+
+allow udev_t lvm_t:process { noatsecure rlimitinh siginh };
+allow udev_t self:capability sys_tty_config;
+
+allow lvm_t verity_metadata_t:dir search;
+#allow syslogd_t unlabeled_t:dir search;
+allow lvm_t kernel_t:key search;
+
+allow veritysetup_t init_t:fd use;
