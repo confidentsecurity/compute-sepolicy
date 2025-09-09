@@ -1,93 +1,81 @@
 policy_module(confident, 1.0.0)
 
-# needed contexts for confident security
-#
-#
-# Declaratiions
-#
-#
-# Only system roles can access internal types:
-#
-role system_r types confident_exec_t;
-role system_r types confident_internal_exec_t;
-
-attribute confident_internal_exec_type;
 attribute confident_exec_type;
-
+attribute confident_internal_exec_type;
 attribute_role confident_user_roles;
-
-# Insert declarations for needed directories
-type confident_root_t;
-type confident_bin_t;
-type confident_etc_t;
-
-
-# Insert declarations for binary files (touching important data or not)
-type confident_internal_exec_t;
-domain_type(confident_internal_exec_t);
-type confident_exec_t;
 domain_type(confident_exec_t);
-type confident_config_t;
-
+domain_type(confident_internal_exec_t);
 neverallow domain confident_exec_t:process ptrace;
 neverallow domain confident_internal_exec_t:process ptrace;
-# Insert Declarations for service related files
-# needs to accessible by systemctl (and symlinked for runtime servicei starting)
-type confident_service_t;
-
-# Temporary permissions for ollama (will have to change for openllm if they move to that)
-
-# Ollama has it's binaries as well as supporting libs
-type confident_ollama_lib_t;
-type confident_ollama_exec_t;
-
-# Add the permissions to the ollama port (for now)
-
-type confident_port_t;
-typeattribute confident_port_t reserved_port_type;
-# Change this port type to the Openllm when implemented
 portcon tcp 11434 gen_context(system_u:object_r:confident_port_t, s0)
+portcon tcp 8081 gen_context(system_u:object_r:router_com_port_t,s0)
+role system_r types confident_exec_t;
+role system_r types confident_internal_exec_t;
+type confident_bin_t;
+type confident_config_t;
+type confident_etc_t;
+type confident_exec_t;
+type confident_internal_exec_t;
+type confident_ollama_exec_t;
+type confident_ollama_lib_t;
+type confident_port_t;
+type confident_root_t;
+type confident_service_t;
+type router_com_port_t;
+type_transition confident_exec_t confident_internal_exec_t:process confident_internal_exec_t;
+type_transition init_t confident_exec_t:process confident_exec_t;
+type_transition initrc_t confident_exec_t:process confident_exec_t;
+typeattribute confident_port_t reserved_port_type;
+typeattribute router_com_port_t reserved_port_type;
 
-# Allow internal binaries to execute themselves:
-allow confident_internal_exec_t self:file { read execute entrypoint };
+allow chronyc_t chronyc_t:capability { dac_read_search };
+allow chronyd_t chronyd_t:capability { dac_read_search };
+allow chronyd_t kernel_t:unix_dgram_socket { sendto };
+allow chronyd_t syslogd_runtime_t:dir { search };
 
-# Add confident_exec_t (wrapper permissions). 
-# With future changes, these may need to be adjusted into the confident_internal_exec
-allow confident_exec_t etc_t:lnk_file { read };
-allow confident_exec_t http_port_t:tcp_socket { name_connect };
-allow confident_exec_t confident_exec_t:fifo_file { getattr ioctl read write };
-allow confident_exec_t etc_t:file { getattr open read };
+allow confident_exec_t bin_t:dir { search };
+allow confident_exec_t bin_t:file { execute execute_no_trans getattr map open read };
 allow confident_exec_t cert_t:dir { search };
 allow confident_exec_t cert_t:file { getattr open read };
-allow confident_exec_t net_conf_t:file { getattr open read };
-allow confident_exec_t shell_exec_t:file { execute map read };
-allow confident_exec_t bin_t:dir { search };
-allow confident_exec_t user_home_dir_t:dir { search };
-allow confident_exec_t confident_exec_t:file { entrypoint };
-allow confident_exec_t var_run_t:dir { add_name create write };
-allow init_t confident_exec_t:process { noatsecure rlimitinh siginh };
-allow init_t confident_bin_t:dir { search };
-allow confident_exec_t init_t:unix_stream_socket { getattr ioctl read write };
-allow confident_exec_t bin_t:file { execute execute_no_trans getattr map open read };
-allow confident_exec_t confident_exec_t:udp_socket { create };
-allow confident_exec_t systemd_resolved_runtime_t:dir { search };
-allow confident_exec_t confident_exec_t:tcp_socket { connect create getattr getopt read setopt write };
-allow confident_exec_t systemd_resolved_runtime_t:file { getattr open read };
-allow confident_exec_t init_t:fd { use };
-allow confident_exec_t locale_t:dir { getattr open read search };
-allow confident_exec_t confident_root_t:dir { search };
 allow confident_exec_t confident_bin_t:dir { search };
+allow confident_exec_t confident_config_t:file { getattr open read };
+allow confident_exec_t confident_etc_t:dir { search };
+allow confident_exec_t confident_exec_t:capability { net_admin };
+allow confident_exec_t confident_exec_t:fifo_file { getattr ioctl read write };
+allow confident_exec_t confident_exec_t:file { entrypoint };
+allow confident_exec_t confident_exec_t:tcp_socket { connect create getattr getopt read setopt write };
+allow confident_exec_t confident_exec_t:udp_socket { create };
+allow confident_exec_t confident_internal_exec_t:file { execute open read };
+allow confident_exec_t confident_internal_exec_t:process { noatsecure transition rlimitinh siginh };
+allow confident_exec_t confident_root_t:dir getattr;
+allow confident_exec_t confident_root_t:dir { search };
+allow confident_exec_t etc_t:file { getattr open read };
+allow confident_exec_t etc_t:lnk_file { read };
+allow confident_exec_t http_port_t:tcp_socket { name_connect };
 allow confident_exec_t init_runtime_t:dir { search };
-allow init_t confident_root_t:dir { search };
+allow confident_exec_t init_runtime_t:sock_file { write };
+allow confident_exec_t init_t:dir { search };
+allow confident_exec_t init_t:fd { use };
+allow confident_exec_t init_t:file { read };
+allow confident_exec_t init_t:lnk_file { read };
+allow confident_exec_t init_t:system { reload };
+allow confident_exec_t init_t:unix_stream_socket { connectto getattr ioctl read write };
+allow confident_exec_t locale_t:dir { getattr open read search };
 allow confident_exec_t locale_t:file { getattr map open read };
 allow confident_exec_t locale_t:lnk_file { read };
+allow confident_exec_t net_conf_t:file { getattr open read };
+allow confident_exec_t self:process { transition sigchld };
+allow confident_exec_t shell_exec_t:file { execute map read };
+allow confident_exec_t systemd_resolved_runtime_t:dir { search };
+allow confident_exec_t systemd_resolved_runtime_t:file { getattr open read };
+allow confident_exec_t systemd_unit_t:service { start status };
+allow confident_exec_t user_home_dir_t:dir { search };
+allow confident_exec_t var_run_t:dir { add_name create write };
 allow confident_exec_t var_run_t:file { append create open write };
-
-# Add additional changes for compute_boot/router_com/compute_worker
-allow confident_exec_t confident_config_t:file { getattr };
-allow confident_exec_t confident_internal_exec_t:file { execute open read };
-allow confident_exec_t confident_internal_exec_t:process { rlimitinh siginh };
+allow confident_exec_t var_run_t:file { getattr read };
+allow confident_exec_t var_t:dir { add_name create read write };
 allow confident_exec_t var_t:file { create getattr open write };
+
 allow confident_internal_exec_t cert_t:dir { open read search };
 allow confident_internal_exec_t cert_t:file { getattr open read };
 allow confident_internal_exec_t cert_t:lnk_file { read };
@@ -100,6 +88,7 @@ allow confident_internal_exec_t confident_internal_exec_t:process { getsched sig
 allow confident_internal_exec_t confident_internal_exec_t:tcp_socket { accept bind connect create getattr getopt listen read setopt write };
 allow confident_internal_exec_t confident_internal_exec_t:udp_socket { connect create getattr read setopt write };
 allow confident_internal_exec_t confident_internal_exec_t:unix_stream_socket { connectto };
+allow confident_internal_exec_t confident_port_t:tcp_socket { connect create read recvfrom sendto } ;
 allow confident_internal_exec_t confident_port_t:tcp_socket { name_connect };
 allow confident_internal_exec_t confident_root_t:dir { search };
 allow confident_internal_exec_t configfs_t:dir { add_name create getattr remove_name rmdir search write };
@@ -109,13 +98,17 @@ allow confident_internal_exec_t etc_t:file { getattr open read };
 allow confident_internal_exec_t etc_t:lnk_file { read };
 allow confident_internal_exec_t http_port_t:tcp_socket { name_connect };
 allow confident_internal_exec_t init_runtime_t:dir { search };
+allow confident_internal_exec_t init_t:dbus { send_msg };
 allow confident_internal_exec_t init_t:fd { use };
 allow confident_internal_exec_t init_t:unix_stream_socket { ioctl read write };
+allow confident_internal_exec_t ld_so_t:file { read execute map };
 allow confident_internal_exec_t locale_t:dir { search };
 allow confident_internal_exec_t locale_t:file { open read };
 allow confident_internal_exec_t net_conf_t:file { getattr open read };
 allow confident_internal_exec_t node_t:tcp_socket { node_bind };
 allow confident_internal_exec_t router_com_port_t:tcp_socket { name_bind };
+allow confident_internal_exec_t self:file { read execute entrypoint };
+allow confident_internal_exec_t self:process { transition sigchld };
 allow confident_internal_exec_t soundd_port_t:tcp_socket { name_connect };
 allow confident_internal_exec_t sysctl_net_t:dir { search };
 allow confident_internal_exec_t sysctl_net_t:file { open read };
@@ -123,9 +116,12 @@ allow confident_internal_exec_t sysctl_t:dir { search };
 allow confident_internal_exec_t sysfs_t:file { open read };
 allow confident_internal_exec_t system_dbusd_runtime_t:dir { search };
 allow confident_internal_exec_t system_dbusd_runtime_t:sock_file { write };
+allow confident_internal_exec_t system_dbusd_t:dbus { send_msg };
 allow confident_internal_exec_t system_dbusd_t:unix_stream_socket { connectto };
 allow confident_internal_exec_t systemd_resolved_runtime_t:dir { search };
 allow confident_internal_exec_t systemd_resolved_runtime_t:file { getattr open read };
+allow confident_internal_exec_t systemd_unit_t:service { start };
+allow confident_internal_exec_t systemd_unit_t:service { start };
 allow confident_internal_exec_t systemd_unit_t:service { start };
 allow confident_internal_exec_t tmp_t:dir { add_name remove_name search write };
 allow confident_internal_exec_t tmp_t:sock_file { create unlink write };
@@ -134,146 +130,22 @@ allow confident_internal_exec_t unreserved_port_t:tcp_socket { name_connect };
 allow confident_internal_exec_t usr_t:file { getattr open read };
 allow confident_internal_exec_t var_t:file { open read };
 
-# make-compute-boot script additional permissions to create the var config file
-#
-
-allow initrc_t var_t:dir { add_name };
-allow initrc_t var_t:file { create write open };
-
-# Allow starting services (NOTE: this can be refactored in the future, but for now ollama is spawned by compute_boot so needs this perm)
-#
-allow confident_internal_exec_t systemd_unit_t:service { start };
-
-# Additional MODEL perms go here:
-# Ollama additions
-allow initrc_t node_t:tcp_socket { node_bind };
-allow initrc_t confident_port_t:tcp_socket { name_bind };
-allow initrc_t usr_t:dir { add_name create remove_name rmdir write };
-allow initrc_t usr_t:file { create rename unlink write };
-allow confident_internal_exec_t systemd_unit_t:service { start };
-
-# Allow internal binaries ability to load libs:
-allow confident_internal_exec_t ld_so_t:file { read execute map };
-
-# Allowing blanket permissions for now on the ollama port from server
 allow confident_ollama_exec_t confident_port_t:tcp_socket { accept append bind connect create getattr getopt ioctl listen lock map name_bind read recvfrom relabelfrom relabelto sendto setattr setopt shutdown write node_bind};
 
-# Allowing our node_worker to communicate through to ollama
-allow confident_internal_exec_t confident_port_t:tcp_socket { connect create read recvfrom sendto } ;
-
-# Allowing our router_comm to bind to the external facing requests.
-type router_com_port_t;
-typeattribute router_com_port_t reserved_port_type;
-portcon tcp 8081 gen_context(system_u:object_r:router_com_port_t,s0)
-
-## Type transitions table (from initrc/init to confident shell wrappers -> confident_internal)
-type_transition initrc_t confident_exec_t:process confident_exec_t;
-type_transition init_t confident_exec_t:process confident_exec_t;
-type_transition confident_exec_t confident_internal_exec_t:process confident_internal_exec_t;
-allow confident_exec_t self:process { transition sigchld };
-allow confident_internal_exec_t self:process { transition sigchld };
-
-
-allow initrc_t confident_exec_t:process { transition };
-allow init_t confident_exec_t:process { transition };
-allow confident_exec_t confident_internal_exec_t:process { transition };
-
-# Associated exec rules
-allow initrc_t confident_exec_t:file { read execute open };
-allow init_t confident_exec_t:file { read execute open };
-
-# Trial additions for now for enforcing boot.
-#
-#
-# Remove apt_t perms as apt won't be included in the final instance
-#allow apt_t apt_t:capability { dac_read_search net_admin sys_nice };
-#allow apt_t apt_tmpfs_t:file { execute map };
-#allow apt_t apt_t:process { getsched setfscreate setsched };
-#allow apt_t apt_var_cache_t:file { map };
-#allow apt_t apt_var_lib_t:dir { setattr watch };
-#allow apt_t bin_t:dir { watch };
-#allow apt_t cert_t:dir { search };
-#allow apt_t cert_t:file { getattr open read };
-#allow apt_t dpkg_var_lib_t:dir { add_name write };
-#allow apt_t dpkg_var_lib_t:file { create };
-#allow apt_t etc_t:dir { watch };
-#allow apt_t init_t:dir { search };
-#allow apt_t init_t:file { getattr ioctl open read };
-#allow apt_t init_t:lnk_file { read };
-#allow apt_t init_t:unix_stream_socket { connectto };
-#allow apt_t kernel_t:unix_dgram_socket { sendto };
-#allow apt_t syslogd_runtime_t:dir { search };
-#allow apt_t systemd_logind_inhibit_runtime_t:fifo_file { write };
-#allow apt_t systemd_logind_t:fd { use };
-#allow apt_t systemd_unit_t:service { start status };
-#allow apt_t user_runtime_root_t:dir { search };
-#allow apt_t var_lib_t:file { create getattr ioctl lock map open read rename setattr unlink write };
-#allow apt_t var_run_t:dir { add_name remove_name write };
-#allow apt_t var_run_t:file { create getattr ioctl lock open read unlink write };
-
-# minor chronyd perms
-allow chronyc_t chronyc_t:capability { dac_read_search };
-allow chronyd_t chronyd_t:capability { dac_read_search };
-allow chronyd_t kernel_t:unix_dgram_socket { sendto };
-allow chronyd_t syslogd_runtime_t:dir { search };
-
-# Additional confident_exec changes since last policy
-allow confident_exec_t confident_config_t:file { open read };
-allow confident_exec_t confident_etc_t:dir { search };
-allow confident_exec_t confident_exec_t:capability { net_admin };
-allow confident_exec_t confident_internal_exec_t:process { noatsecure };
-allow confident_exec_t init_runtime_t:sock_file { write };
-allow confident_exec_t init_t:dir { search };
-allow confident_exec_t init_t:file { read };
-allow confident_exec_t init_t:lnk_file { read };
-allow confident_exec_t init_t:system { reload };
-allow confident_exec_t init_t:unix_stream_socket { connectto };
-allow confident_exec_t systemd_unit_t:service { start status };
-allow confident_exec_t var_run_t:file { getattr read };
-allow confident_exec_t var_t:dir { add_name create read write };
-allow confident_exec_t confident_root_t:dir getattr;
-allow confident_internal_exec_t init_t:dbus { send_msg };
-allow confident_internal_exec_t system_dbusd_t:dbus { send_msg };
-
-# Service related (possibly non-essential)
 allow crond_t kernel_t:unix_dgram_socket { sendto };
 allow dhcpc_t kernel_t:unix_dgram_socket { sendto };
 allow dhcpc_t syslogd_runtime_t:dir { search };
 allow dpkg_t locale_t:file { map };
 allow getty_t getty_t:capability2 { checkpoint_restore };
 
-# System Startup services
-allow initrc_t apt_var_lib_t:dir { add_name write };
-allow initrc_t apt_var_lib_t:file { create lock open read write };
-allow initrc_t backup_store_t:dir { add_name remove_name write };
-allow initrc_t backup_store_t:file { create open rename setattr write };
-allow initrc_t confident_bin_t:dir { search };
-allow initrc_t confident_config_t:file { getattr open read };
-allow initrc_t confident_etc_t:dir { search };
-allow initrc_t confident_root_t:dir { getattr search };
-allow initrc_t dpkg_t:process2 { nnp_transition };
-allow initrc_t init_runtime_t:file { rename setattr };
-allow initrc_t init_runtime_t:lnk_file { unlink };
-allow initrc_t nsfs_t:file { getattr };
-allow initrc_t security_t:file { map };
-allow initrc_t security_t:security { compute_av };
-allow initrc_t sysctl_irq_t:dir { add_name write };
-allow initrc_t sysctl_irq_t:file { create };
-allow initrc_t systemd_networkd_t:dbus { send_msg };
-allow initrc_t tmpfs_t:file { execute map read write };
-allow initrc_t usr_t:file { execute };
-allow initrc_t var_lib_t:dir { setattr };
-allow initrc_t var_lib_t:file { map };
-allow initrc_t var_lib_t:lnk_file { create read unlink };
-allow initrc_t var_run_t:sock_file { write };
-allow initrc_t var_t:dir { remove_name setattr write };
-allow initrc_t var_t:file { ioctl lock read rename unlink };
-
-# additional boot permissions
 allow init_t chronyd_var_lib_t:dir { mounton };
+allow init_t confident_bin_t:dir { search };
 allow init_t confident_config_t:file { getattr open read };
 allow init_t confident_etc_t:dir { search };
+allow init_t confident_exec_t:file { read execute open };
+allow init_t confident_exec_t:process { transition noatsecure rlimitinh siginh };
 allow init_t confident_internal_exec_t:dbus { send_msg };
+allow init_t confident_root_t:dir { search };
 allow init_t console_device_t:chr_file { setattr };
 allow init_t http_port_t:tcp_socket { name_connect };
 allow init_t init_var_lib_t:file { setattr };
@@ -284,7 +156,6 @@ allow init_t systemd_resolved_runtime_t:dir { mounton };
 allow init_t tmp_t:dir { relabelfrom relabelto };
 allow init_t tmp_t:file { create open read unlink write };
 allow init_t tty_device_t:chr_file { setattr };
-allow init_t verity_metadata_t:dir { mounton };
 allow init_t usr_t:file { open read };
 allow init_t uuidd_runtime_t:sock_file { write };
 allow init_t var_log_t:dir { add_name write };
@@ -292,10 +163,40 @@ allow init_t var_log_t:file { create };
 allow init_t var_run_t:sock_file { setattr write };
 allow init_t var_spool_t:dir { mounton };
 allow init_t var_t:file { open read };
+allow init_t verity_metadata_t:dir { mounton };
+allow initrc_t apt_var_lib_t:dir { add_name write };
+allow initrc_t apt_var_lib_t:file { create lock open read write };
+allow initrc_t backup_store_t:dir { add_name remove_name write };
+allow initrc_t backup_store_t:file { create open rename setattr write };
+allow initrc_t confident_bin_t:dir { search };
+allow initrc_t confident_config_t:file { getattr open read };
+allow initrc_t confident_etc_t:dir { search };
+allow initrc_t confident_exec_t:file { read execute open };
+allow initrc_t confident_exec_t:process { transition };
+allow initrc_t confident_port_t:tcp_socket { name_bind };
+allow initrc_t confident_root_t:dir { getattr search };
+allow initrc_t dpkg_t:process2 { nnp_transition };
+allow initrc_t init_runtime_t:file { rename setattr };
+allow initrc_t init_runtime_t:lnk_file { unlink };
+allow initrc_t node_t:tcp_socket { node_bind };
+allow initrc_t nsfs_t:file { getattr };
+allow initrc_t security_t:file { map };
+allow initrc_t security_t:security { compute_av };
+allow initrc_t sysctl_irq_t:dir { add_name write };
+allow initrc_t sysctl_irq_t:file { create };
+allow initrc_t systemd_networkd_t:dbus { send_msg };
+allow initrc_t tmpfs_t:file { execute map read write };
+allow initrc_t usr_t:dir { add_name create remove_name rmdir write };
+allow initrc_t usr_t:file { create rename unlink write };
+allow initrc_t usr_t:file { execute };
+allow initrc_t var_lib_t:dir { setattr };
+allow initrc_t var_lib_t:file { map };
+allow initrc_t var_lib_t:lnk_file { create read unlink };
+allow initrc_t var_run_t:sock_file { write };
+allow initrc_t var_t:dir { add_name remove_name setattr write };
+allow initrc_t var_t:file { create write open ioctl lock read rename unlink };
 allow kernel_t initrc_t:fd { use };
 allow kernel_t verity_metadata_t:file { read };
-
-
 allow mount_t tmp_t:file { open read write };
 allow mount_t verity_metadata_t:file { getattr };
 allow ntpd_t kernel_t:unix_dgram_socket { sendto };
@@ -318,8 +219,8 @@ allow systemd_generator_t fixed_disk_device_t:blk_file { getattr read };
 allow systemd_generator_t kmsg_device_t:chr_file { write };
 allow systemd_generator_t lib_t:file { execute_no_trans };
 allow systemd_generator_t udev_runtime_t:file { getattr open read };
-allow systemd_generator_t verity_metadata_t:dir { getattr search };
 allow systemd_generator_t var_run_t:file { append getattr open read write };
+allow systemd_generator_t verity_metadata_t:dir { getattr search };
 allow systemd_logind_t kernel_t:unix_dgram_socket { sendto };
 allow systemd_logind_t syslogd_runtime_t:dir { search };
 allow systemd_networkd_t kernel_t:unix_dgram_socket { sendto };
@@ -345,11 +246,8 @@ allow systemd_tmpfiles_t tmpfs_t:file { getattr ioctl open read };
 allow systemd_user_runtime_dir_t cgroup_t:dir { search };
 allow systemd_user_runtime_dir_t cgroup_t:filesystem { getattr };
 allow systemd_user_runtime_dir_t fs_t:filesystem { getattr };
-
-# Console setup for keyboard 
 allow udev_t consolesetup_conf_t:dir { search };
 allow udev_t consolesetup_conf_t:file { execute execute_no_trans open read };
 allow udev_t consolesetup_runtime_t:dir { search };
 allow udev_t consolesetup_runtime_t:file { getattr };
 allow udev_t kernel_t:unix_dgram_socket { sendto };
-
