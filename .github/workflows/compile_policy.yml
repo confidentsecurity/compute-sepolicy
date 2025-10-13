@@ -23,6 +23,7 @@ jobs:
           sudo apt-get install checkpolicy
           sudo apt-get install selinux-utils selinux-policy-dev
           make clean
+		  make enableaudit
           make
           sudo make install
       - name: Create Policy Artifact
