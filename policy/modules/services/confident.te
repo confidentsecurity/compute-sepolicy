@@ -130,6 +130,33 @@ allow confident_internal_exec_t unreserved_port_t:tcp_socket { name_connect };
 allow confident_internal_exec_t usr_t:file { getattr open read };
 allow confident_internal_exec_t var_t:file { open read };
 
+# Additional rules for compute_boot + GPU
+allow confident_internal_exec_t cgroup_t:dir search;
+allow confident_internal_exec_t security_t:dir search;
+allow confident_internal_exec_t security_t:file { open read };
+allow confident_internal_exec_t bin_t:dir search;
+allow confident_internal_exec_t device_t:chr_file { create ioctl open read setattr write };
+allow confident_internal_exec_t device_t:dir { add_name create remove_name setattr write };
+allow confident_internal_exec_t device_t:lnk_file { create unlink };
+allow confident_internal_exec_t dmesg_exec_t:file { execute execute_no_trans getattr map open read };
+allow confident_internal_exec_t initrc_runtime_t:dir search;
+allow confident_internal_exec_t initrc_runtime_t:sock_file { getattr write };
+allow confident_internal_exec_t initrc_t:unix_stream_socket connectto;
+allow confident_internal_exec_t kernel_t:system syslog_read;
+allow confident_internal_exec_t kmsg_device_t:chr_file { open read };
+allow confident_internal_exec_t locale_t:dir { getattr open read };
+allow confident_internal_exec_t locale_t:file { getattr map };
+allow confident_internal_exec_t locale_t:lnk_file read;
+allow confident_internal_exec_t proc_t:file { getattr open read };
+allow confident_internal_exec_t self:capability { mknod sys_admin sys_nice };
+allow confident_internal_exec_t self:capability2 { perfmon syslog };
+allow confident_internal_exec_t self:fifo_file getattr;
+allow confident_internal_exec_t sysctl_vm_t:dir search;
+allow confident_internal_exec_t sysctl_vm_t:file { getattr open read };
+allow confident_internal_exec_t sysfs_t:dir read;
+allow confident_internal_exec_t sysfs_t:file getattr;
+allow sysadm_t router_com_port_t:tcp_socket name_connect;
+
 allow confident_ollama_exec_t confident_port_t:tcp_socket { accept append bind connect create getattr getopt ioctl listen lock map name_bind read recvfrom relabelfrom relabelto sendto setattr setopt shutdown write node_bind};
 
 allow crond_t kernel_t:unix_dgram_socket { sendto };
@@ -251,3 +278,30 @@ allow udev_t consolesetup_conf_t:file { execute execute_no_trans open read };
 allow udev_t consolesetup_runtime_t:dir { search };
 allow udev_t consolesetup_runtime_t:file { getattr };
 allow udev_t kernel_t:unix_dgram_socket { sendto };
+
+# Additional rules for cryptsetup
+allow initrc_t lvm_t:unix_dgram_socket sendto;
+allow initrc_t tpm_device_t:chr_file { getattr open read write };
+allow initrc_t tmpfs_t:dir { add_name create remove_name rmdir write };
+allow initrc_t systemd_passwd_runtime_t:sock_file write;
+allow initrc_t tmpfs_t:file { create open unlink };
+allow lvm_t kernel_t:key write;
+allow lvm_t self:key { read setattr };
+allow lvm_t systemd_passwd_runtime_t:dir { add_name getattr read remove_name search watch write };
+allow lvm_t systemd_passwd_runtime_t:file { create getattr open read rename setattr unlink write };
+allow lvm_t systemd_passwd_runtime_t:sock_file { create unlink };
+allow systemd_passwd_agent_t lvm_t:dir { getattr search };
+allow systemd_passwd_agent_t lvm_t:file { getattr open read };
+
+# Additional rules for nvidia
+allow initrc_t device_t:chr_file map;
+allow initrc_t initrc_runtime_t:sock_file create;
+allow initrc_t kernel_t:key search;
+
+# Additional rules for Azure health probes (to be removed)
+allow systemd_run_t var_lib_t:file { execute execute_no_trans getattr map open read };
+allow systemd_run_t var_lib_t:dir { getattr open search };
+allow systemd_run_t var_log_t:dir { add_name create getattr };
+allow systemd_run_t var_log_t:file { append open };
+allow initrc_t var_lib_t:file { execute execute_no_trans getattr map open read };
+allow initrc_t router_com_port_t:tcp_socket name_connect;

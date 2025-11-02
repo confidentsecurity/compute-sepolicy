@@ -1,6 +1,7 @@
 *.pp
 *.py[co]
 *.res
+.idea
 
 /base.conf
 /base.fc
