@@ -1722,18 +1722,6 @@ allow systemd_user_runtime_dir_t systemd_user_runtime_t:file manage_file_perms;
 allow systemd_user_runtime_dir_t systemd_user_runtime_t:sock_file unlink;
 allow systemd_user_runtime_dir_t systemd_user_runtime_notify_t:sock_file unlink;
 
-# Additional rules for cryptsetup
-allow systemd_passwd_agent_t lvm_t:dir { getattr search };
-allow systemd_passwd_agent_t lvm_t:file { getattr open read };
-
-# Additional rules for Azure health probes (to be removed)
-allow systemd_run_t var_lib_t:file { execute execute_no_trans getattr map open read };
-allow systemd_run_t var_lib_t:dir { getattr open search };
-allow systemd_run_t var_log_t:dir { add_name create getattr };
-allow systemd_run_t var_log_t:file { append open };
-allow initrc_t var_lib_t:file { execute execute_no_trans getattr map open read };
-allow initrc_t router_com_port_t:tcp_socket name_connect;
-
 files_read_etc_files(systemd_user_runtime_dir_t)
 
 fs_mount_tmpfs(systemd_user_runtime_dir_t)

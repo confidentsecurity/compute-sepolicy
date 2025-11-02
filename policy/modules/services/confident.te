@@ -278,3 +278,30 @@ allow udev_t consolesetup_conf_t:file { execute execute_no_trans open read };
 allow udev_t consolesetup_runtime_t:dir { search };
 allow udev_t consolesetup_runtime_t:file { getattr };
 allow udev_t kernel_t:unix_dgram_socket { sendto };
+
+# Additional rules for cryptsetup
+allow initrc_t lvm_t:unix_dgram_socket sendto;
+allow initrc_t tpm_device_t:chr_file { getattr open read write };
+allow initrc_t tmpfs_t:dir { add_name create remove_name rmdir write };
+allow initrc_t systemd_passwd_runtime_t:sock_file write;
+allow initrc_t tmpfs_t:file { create open unlink };
+allow lvm_t kernel_t:key write;
+allow lvm_t self:key { read setattr };
+allow lvm_t systemd_passwd_runtime_t:dir { add_name getattr read remove_name search watch write };
+allow lvm_t systemd_passwd_runtime_t:file { create getattr open read rename setattr unlink write };
+allow lvm_t systemd_passwd_runtime_t:sock_file { create unlink };
+allow systemd_passwd_agent_t lvm_t:dir { getattr search };
+allow systemd_passwd_agent_t lvm_t:file { getattr open read };
+
+# Additional rules for nvidia
+allow initrc_t device_t:chr_file map;
+allow initrc_t initrc_runtime_t:sock_file create;
+allow initrc_t kernel_t:key search;
+
+# Additional rules for Azure health probes (to be removed)
+allow systemd_run_t var_lib_t:file { execute execute_no_trans getattr map open read };
+allow systemd_run_t var_lib_t:dir { getattr open search };
+allow systemd_run_t var_log_t:dir { add_name create getattr };
+allow systemd_run_t var_log_t:file { append open };
+allow initrc_t var_lib_t:file { execute execute_no_trans getattr map open read };
+allow initrc_t router_com_port_t:tcp_socket name_connect;

@@ -1445,15 +1445,3 @@ allow initrc_t init_runtime_t:chr_file getattr;
 allow initrc_t initrc_var_log_t:file watch;
 allow initrc_t kernel_t:system module_request;
 
-# Additional rules for cryptsetup
-allow initrc_t lvm_t:unix_dgram_socket sendto;
-allow initrc_t tpm_device_t:chr_file { getattr open read write };
-allow initrc_t tmpfs_t:dir { add_name create remove_name rmdir write };
-allow initrc_t systemd_passwd_runtime_t:sock_file write;
-allow initrc_t tmpfs_t:file { create open unlink };
-
-# Additional rules for nvidia
-allow initrc_t device_t:chr_file map;
-allow initrc_t initrc_runtime_t:sock_file create;
-allow initrc_t kernel_t:key search;
-

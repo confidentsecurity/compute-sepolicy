@@ -231,13 +231,6 @@ filetrans_pattern(lvm_t, lvm_etc_t, lvm_metadata_t, file)
 files_etc_filetrans(lvm_t, lvm_metadata_t, file)
 files_search_mnt(lvm_t)
 
-# Additional rules for cryptsetup
-allow lvm_t kernel_t:key write;
-allow lvm_t self:key { read setattr };
-allow lvm_t systemd_passwd_runtime_t:dir { add_name getattr read remove_name search watch write };
-allow lvm_t systemd_passwd_runtime_t:file { create getattr open read rename setattr unlink write };
-allow lvm_t systemd_passwd_runtime_t:sock_file { create unlink };
-
 kernel_request_load_module(lvm_t)
 kernel_get_sysvipc_info(lvm_t)
 kernel_read_system_state(lvm_t)
