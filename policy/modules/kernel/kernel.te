@@ -1,5 +1,9 @@
 policy_module(kernel, 1.29.1)
 
+gen_require(`
+	class system firmware_load;
+')
+
 ########################################
 #
 # Declarations
@@ -221,6 +225,7 @@ sid tcp_socket		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
 
 allow kernel_t self:capability { chown dac_override dac_read_search fowner fsetid kill setgid setuid setpcap linux_immutable net_bind_service net_broadcast net_admin net_raw ipc_lock ipc_owner sys_rawio sys_chroot sys_ptrace sys_pacct sys_admin sys_boot sys_nice sys_resource sys_time sys_tty_config mknod lease audit_write setfcap };
 allow kernel_t self:process { transition signal_perms getsched setsched getsession getpgid setpgid getcap setcap share getattr noatsecure siginh rlimitinh dyntransition setkeycreate setsockcreate getrlimit };
+dontaudit kernel_t self:system firmware_load;
 allow kernel_t self:shm create_shm_perms;
 allow kernel_t self:sem create_sem_perms;
 allow kernel_t self:msg { send receive };
