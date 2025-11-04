@@ -18,3 +18,8 @@
 /opt/confidentsec/etc/system\.conf	--	gen_context(system_u:object_r:confident_config_t,s0)
 /opt/confidentsec/etc/router_com\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
 
+
+/usr/vllm/vllm-env.*/bin/vllm     --   gen_context(system_u:object_r:vllm_exec_t,s0)
+/usr/vllm/vllm-env.*/bin/activate --   gen_context(system_u:object_r:vllm_exec_t,s0)
+/usr/vllm/vllm-env.*/bin/python.* --   gen_context(system_u:object_r:vllm_exec_t,s0)
+/usr/vllm/python/cpython-3\.12.*?-linux-x86_64-gnu/bin/python.* --   gen_context(system_u:object_r:vllm_exec_t,s0)
