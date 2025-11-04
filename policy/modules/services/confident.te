@@ -298,6 +298,20 @@ allow initrc_t device_t:chr_file map;
 allow initrc_t initrc_runtime_t:sock_file create;
 allow initrc_t kernel_t:key search;
 
+# Allow loading nvidia firmware
+allow kernel_t lib_t:system firmware_load;
+
+# vllm execute
+allow init_t xdg_data_t:file execute;
+
+# nvidia fabric manager
+allow initrc_t device_t:chr_file { setattr unlink };
+allow initrc_t ircd_port_t:tcp_socket name_bind;
+allow initrc_t self:capability2 perfmon;
+
+# allow logged in user to use nvidia-smi
+allow sysadm_t device_t:chr_file { create read write };
+
 # Additional rules for Azure health probes (to be removed)
 allow systemd_run_t var_lib_t:file { execute execute_no_trans getattr map open read };
 allow systemd_run_t var_lib_t:dir { getattr open search };
