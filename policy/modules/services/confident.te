@@ -301,8 +301,15 @@ allow initrc_t kernel_t:key search;
 # Allow loading nvidia firmware
 allow kernel_t lib_t:system firmware_load;
 
-# vllm execute
-allow init_t xdg_data_t:file execute;
+# vllm 
+# is this first line needed?
+allow init_t xdg_data_t:file { execute open read map };
+allow initrc_t self:anon_inode { create map read write };
+allow initrc_t self:io_uring { allowed sqpoll };
+allow initrc_t tmp_t:sock_file create;
+allow initrc_t tmpfs_t:file ioctl;
+allow initrc_t xdg_data_t:dir { add_name remove_name };
+allow initrc_t xdg_data_t:file { execute open read map create execute_no_trans ioctl map rename write };
 
 # nvidia fabric manager
 allow initrc_t device_t:chr_file { setattr unlink };
@@ -310,7 +317,9 @@ allow initrc_t ircd_port_t:tcp_socket name_bind;
 allow initrc_t self:capability2 perfmon;
 
 # allow logged in user to use nvidia-smi
-allow sysadm_t device_t:chr_file { create read write };
+allow sysadm_t device_t:chr_file { create read write open setattr unlink ioctl};
+allow sysadm_t initrc_t:unix_stream_socket connectto;
+allow sysadm_t self:capability2 perfmon;
 
 # Additional rules for Azure health probes (to be removed)
 allow systemd_run_t var_lib_t:file { execute execute_no_trans getattr map open read };
