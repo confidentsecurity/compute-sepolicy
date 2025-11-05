@@ -307,4 +307,4 @@ allow initrc_t var_lib_t:file { execute execute_no_trans getattr map open read }
 allow initrc_t router_com_port_t:tcp_socket name_connect;
 
 # Additional rules for debugging tpm
-allow initrc_t tpm_device_t:chr_file { getattr open read };
+allow sysadm_sudo_t tpm_device_t:chr_file { getattr open read };
