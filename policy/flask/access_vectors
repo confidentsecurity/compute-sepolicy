@@ -1071,5 +1071,6 @@ inherits file
 class io_uring
 {
 	override_creds
+	allowed
 	sqpoll
 }
