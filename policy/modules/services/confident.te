@@ -305,8 +305,10 @@ allow kernel_t lib_t:system firmware_load;
 # is this first line needed?
 allow init_t xdg_data_t:file { execute open read map };
 allow initrc_t self:anon_inode { create map read write };
-allow initrc_t self:io_uring { allowed sqpoll };
-allow initrc_t tmp_t:sock_file create;
+allow initrc_t self:io_uring { sqpoll };
+# is allowed a thing? 
+# allow initrc_t self:io_uring { allowed sqpoll };
+allow initrc_t tmp_t:sock_file { create write };
 allow initrc_t tmpfs_t:file ioctl;
 allow initrc_t xdg_data_t:dir { add_name remove_name };
 allow initrc_t xdg_data_t:file { execute open read map create execute_no_trans ioctl map rename write };
