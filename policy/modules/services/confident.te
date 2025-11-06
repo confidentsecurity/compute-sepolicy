@@ -302,7 +302,7 @@ allow initrc_t kernel_t:key search;
 allow kernel_t lib_t:system firmware_load;
 
 # vllm 
-# is this first line needed?
+# allow to run python3.12 from our vllm venv
 allow init_t xdg_data_t:file { execute open read map };
 allow initrc_t self:anon_inode { create map read write };
 allow initrc_t self:io_uring { allowed sqpoll };
