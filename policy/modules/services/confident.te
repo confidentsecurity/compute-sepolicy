@@ -312,7 +312,6 @@ allow initrc_t xdg_data_t:dir { add_name remove_name };
 allow initrc_t xdg_data_t:file { execute open read map create execute_no_trans ioctl map rename write };
 allow initrc_t node_t:udp_socket node_bind;
 # multiple gpus
-allow initrc_t efivarfs_t:file write;
 allow initrc_t kmod_t:process { noatsecure rlimitinh siginh };
 allow initrc_t self:netlink_rdma_socket create;
 allow initrc_t self:unix_dgram_socket sendto;
