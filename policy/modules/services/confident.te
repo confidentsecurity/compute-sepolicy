@@ -305,3 +305,10 @@ allow systemd_run_t var_log_t:dir { add_name create getattr };
 allow systemd_run_t var_log_t:file { append open };
 allow initrc_t var_lib_t:file { execute execute_no_trans getattr map open read };
 allow initrc_t router_com_port_t:tcp_socket name_connect;
+
+# Additional rules to support systemd initiated shutdowns on Azure
+allow kernel_t self:process setrlimit;
+allow kernel_t init_t:file read;
+allow kernel_t init_t:lnk_file read;
+allow kernel_t init_t:unix_stream_socket connectto;
+allow kernel_t initctl_t:fifo_file { open write};
