@@ -9,6 +9,7 @@ neverallow domain confident_exec_t:process ptrace;
 neverallow domain confident_internal_exec_t:process ptrace;
 portcon tcp 11434 gen_context(system_u:object_r:confident_port_t, s0)
 portcon tcp 8081 gen_context(system_u:object_r:router_com_port_t,s0)
+portcon tcp 8091 gen_context(system_u:object_r:metadata_port_t, s0)
 role system_r types confident_exec_t;
 role system_r types confident_internal_exec_t;
 type confident_bin_t;
@@ -22,6 +23,7 @@ type confident_port_t;
 type confident_root_t;
 type confident_service_t;
 type router_com_port_t;
+type metadata_port_t;
 type_transition confident_exec_t confident_internal_exec_t:process confident_internal_exec_t;
 type_transition init_t confident_exec_t:process confident_exec_t;
 type_transition initrc_t confident_exec_t:process confident_exec_t;
@@ -75,6 +77,8 @@ allow confident_exec_t var_run_t:file { append create open write };
 allow confident_exec_t var_run_t:file { getattr read };
 allow confident_exec_t var_t:dir { add_name create read write };
 allow confident_exec_t var_t:file { create getattr open write };
+# needed for system_conf service to talk to metadata server on bare metal
+allow confident_exec_t metadata_port_t:tcp_socket { name_connect };
 
 allow confident_internal_exec_t cert_t:dir { open read search };
 allow confident_internal_exec_t cert_t:file { getattr open read };
