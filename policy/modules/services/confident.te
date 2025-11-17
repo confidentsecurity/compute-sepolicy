@@ -375,7 +375,7 @@ allow vllm_exec_t home_root_t:dir { getattr search };
 allow vllm_exec_t init_t:fd use;
 allow vllm_exec_t init_t:unix_stream_socket { getattr ioctl read write };
 allow vllm_exec_t locale_t:dir { getattr open read search };
-allow vllm_exec_t locale_t:file { getattr map open read };
+allow vllm_exec_t locale_t:file { getattr ioctl map open read };
 allow vllm_exec_t locale_t:lnk_file read;
 allow vllm_exec_t proc_t:file { getattr ioctl open read };
 allow vllm_exec_t self:capability { dac_read_search mknod };
