@@ -342,6 +342,17 @@ neverallow domain vllm_exec_t:process ptrace;
 # TODO:
 # systemd creates directories for hf-cache and vllm-cache, their context should be changed after creation.
 
+# additional rules for vLLM on GCP GPU
+allow kernel_t var_t:dir add_name;
+allow kernel_t var_t:file { create getattr ioctl open read setattr write };
+allow kernel_t vllm_exec_t:file { getattr ioctl open read };
+allow kernel_t vllm_exec_t:lnk_file read;
+allow kernel_t vllm_exec_t:process getattr;
+
+# addional rules for vLLM on CPU
+allow systemd_run_t vllm_exec_t:dir { getattr search };
+allow systemd_run_t vllm_exec_t:file { open read };
+
 allow init_t vllm_exec_t:file { execute };
 allow init_t vllm_exec_t:process { transition noatsecure rlimitinh siginh };
 
