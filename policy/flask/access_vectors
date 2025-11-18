@@ -410,6 +410,7 @@ class system
 	syslog_console
 	module_request
 	module_load
+	firmware_load
 
 	# these are overloaded userspace
 	# permissions from systemd
@@ -1045,6 +1046,9 @@ class bpf
 class xdp_socket
 inherits socket
 
+class mctp_socket
+inherits socket
+
 class perf_event
 {
 	open
@@ -1057,6 +1061,16 @@ class perf_event
 
 class lockdown
 {
-    integrity
-    confidentiality
+	integrity
+	confidentiality
+}
+
+class anon_inode
+inherits file
+
+class io_uring
+{
+	override_creds
+	allowed
+	sqpoll
 }
