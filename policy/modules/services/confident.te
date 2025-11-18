@@ -234,6 +234,8 @@ allow rpcd_t kernel_t:unix_dgram_socket { sendto };
 allow rpcd_t syslogd_runtime_t:dir { search };
 allow sysadm_t auditd_log_t:dir { getattr read search };
 allow sysadm_t auditd_log_t:file { getattr read };
+allow sysadm_t var_log_t:file watch;
+allow kmod_t var_lib_t:dir search;
 allow sysctl_irq_t proc_t:filesystem { associate };
 allow syslogd_t init_t:unix_stream_socket { connectto };
 allow syslogd_t kernel_t:unix_stream_socket { setopt shutdown };
@@ -491,3 +493,8 @@ allow vllm_exec_t self:tcp_socket { accept append bind connect create getattr ge
 allow vllm_exec_t self:udp_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
 allow vllm_exec_t self:unix_dgram_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
 allow vllm_exec_t self:unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen read setattr setopt shutdown write };
+
+# Additional rules for UFW compatibility (runs as a one-time setup service)
+allow init_t iptables_t:process noatsecure;
+allow sysadm_t iptables_t:process { noatsecure rlimitinh siginh transition };
+allow sysadm_t syslogd_exec_t:file execute;
