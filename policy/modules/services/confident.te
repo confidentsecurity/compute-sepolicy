@@ -155,7 +155,17 @@ allow confident_internal_exec_t sysctl_vm_t:dir search;
 allow confident_internal_exec_t sysctl_vm_t:file { getattr open read };
 allow confident_internal_exec_t sysfs_t:dir read;
 allow confident_internal_exec_t sysfs_t:file getattr;
+
+# Additional rules for sysadm debugging in dev
 allow sysadm_t router_com_port_t:tcp_socket name_connect;
+allow sysadm_t confident_root_t:dir { getattr search read open };
+allow sysadm_t confident_root_t:file { getattr read open };
+allow sysadm_t confident_bin_t:dir { getattr search read open };
+allow sysadm_t confident_bin_t:file { getattr read open };
+allow sysadm_t confident_etc_t:dir { getattr search read open };
+allow sysadm_t confident_etc_t:file { getattr read open };
+allow sysadm_t confident_config_t:dir { getattr search read open };
+allow sysadm_t confident_config_t:file { getattr read open };
 
 allow confident_ollama_exec_t confident_port_t:tcp_socket { accept append bind connect create getattr getopt ioctl listen lock map name_bind read recvfrom relabelfrom relabelto sendto setattr setopt shutdown write node_bind};
 
