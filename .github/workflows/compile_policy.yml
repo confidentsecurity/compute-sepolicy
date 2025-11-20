@@ -26,8 +26,18 @@ jobs:
           make enableaudit
           make
           sudo make install
+      - name: Generate policy checksum
+        run: |
+          find /etc/selinux/confident_policy -type f -exec sha256sum {} \; | cut -d' ' -f1 | sort | sha256sum > policy-files.sha256
+          
       - name: Create Policy Artifact
         uses: actions/upload-artifact@v4
         with:
           name: confident-sepolicy
-          path: /etc/selinux/confident_policy # or path/to/artifact
+          path: /etc/selinux/confident_policy
+
+      - name: Create Directory Checksum Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: confident-sepolicy-sha256
+          path: policy-files.sha256
