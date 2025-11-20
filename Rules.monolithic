@@ -96,6 +96,7 @@ ifneq ($(pv),$(kv))
 endif
 	@$(INSTALL) -d -m 0755 $(@D)
 	$(verbose) $(CHECKPOLICY) -U $(UNK_PERMS) -S -O -E $^ -o $@
+	@echo "$(NAME)-$(POLICY_VERSION)" > $(@D)/policy-version.txt
 
 ########################################
 #
