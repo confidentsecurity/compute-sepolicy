@@ -331,168 +331,159 @@ allow kernel_t initctl_t:fifo_file { open write};
 ### VLLM
 
 ## Type defs
-domain_type(vllm_exec_t);
+type vllm_t;
 type vllm_exec_t;
-role system_r types vllm_exec_t;
-type_transition init_t vllm_exec_t:process vllm_exec_t;
+init_daemon_domain(vllm_t, vllm_exec_t)
+allow init_t vllm_t:process { noatsecure siginh };
+allow vllm_t vllm_exec_t:file { execute_no_trans };
+neverallow domain vllm_t:process ptrace;
 
-neverallow domain vllm_exec_t:process ptrace;
-
-# TODO:
-# we should use a separate type for files.
-
-# TODO:
-# systemd creates directories for hf-cache and vllm-cache, their context should be changed after creation.
+type vllm_data_t;
+files_type(vllm_data_t);
 
 # additional rules for vLLM on GCP GPU
 allow kernel_t var_t:dir add_name;
 allow kernel_t var_t:file { create getattr ioctl open read setattr write };
 allow kernel_t vllm_exec_t:file { getattr ioctl open read };
 allow kernel_t vllm_exec_t:lnk_file read;
-allow kernel_t vllm_exec_t:process getattr;
+allow kernel_t vllm_t:process getattr;
 
 # addional rules for vLLM on CPU
 allow systemd_run_t vllm_exec_t:dir { getattr search };
 allow systemd_run_t vllm_exec_t:file { open read };
 
-allow init_t vllm_exec_t:file { execute };
-allow init_t vllm_exec_t:process { transition noatsecure rlimitinh siginh };
 
-allow vllm_exec_t self:file { entrypoint execute execute_no_trans map };
-allow vllm_exec_t self:anon_inode { create map read write };
-allow vllm_exec_t self:io_uring { allowed sqpoll };
-allow vllm_exec_t shell_exec_t:file { execute execute_no_trans open map read };
-allow vllm_exec_t dmesg_exec_t:file { execute execute_no_trans open map read };
-allow vllm_exec_t bin_t:dir { getattr open read search };
-allow vllm_exec_t bin_t:file { getattr execute execute_no_trans map open read };
-allow vllm_exec_t bin_t:lnk_file { getattr read };
+allow vllm_t self:file { entrypoint execute execute_no_trans map };
+allow vllm_t self:anon_inode { create map read write };
+allow vllm_t self:io_uring { allowed sqpoll };
+allow vllm_t shell_exec_t:file { execute execute_no_trans open map read };
+allow vllm_t dmesg_exec_t:file { execute execute_no_trans open map read };
+allow vllm_t bin_t:dir { getattr open read search };
+allow vllm_t bin_t:file { getattr execute execute_no_trans map open read };
+allow vllm_t bin_t:lnk_file { getattr read };
 
 # vllm calls ldconfig
-allow vllm_exec_t ldconfig_t:process { noatsecure rlimitinh siginh };
-allow vllm_exec_t ldconfig_exec_t:file { execute execute_no_trans open read };
+allow vllm_t ldconfig_t:process { noatsecure rlimitinh siginh };
+allow vllm_t ldconfig_exec_t:file { execute execute_no_trans open read };
 
 # vllm wants to load module net-pf-16-proto-20
-allow vllm_exec_t kernel_t:system module_request;
+allow vllm_t kernel_t:system module_request;
 
-allow vllm_exec_t kmod_t:process { noatsecure rlimitinh siginh };
-allow vllm_exec_t self:netlink_rdma_socket { create bind getattr read setopt write };
-allow vllm_exec_t self:unix_dgram_socket sendto;
-allow vllm_exec_t cert_t:dir search;
-allow vllm_exec_t cert_t:file { getattr open read };
-allow vllm_exec_t device_t:chr_file { create getattr ioctl open read setattr write };
-allow vllm_exec_t device_t:dir { add_name create remove_name setattr };
-allow vllm_exec_t device_t:lnk_file { create unlink };
-allow vllm_exec_t etc_t:file { getattr open read };
-allow vllm_exec_t etc_t:lnk_file read;
-allow vllm_exec_t home_root_t:dir { getattr search };
-allow vllm_exec_t init_t:fd use;
-allow vllm_exec_t init_t:unix_stream_socket { getattr ioctl read write };
-allow vllm_exec_t locale_t:dir { getattr open read search };
-allow vllm_exec_t locale_t:file { getattr ioctl map open read };
-allow vllm_exec_t locale_t:lnk_file read;
-allow vllm_exec_t proc_t:file { getattr ioctl open read };
-allow vllm_exec_t self:capability { dac_read_search mknod };
-allow vllm_exec_t self:capability2 { perfmon syslog };
-allow vllm_exec_t self:fifo_file { getattr ioctl read write };
-allow vllm_exec_t self:process { execmem getsched setsched signal };
-allow vllm_exec_t sysctl_t:dir search;
-allow vllm_exec_t sysctl_vm_t:dir search;
-allow vllm_exec_t sysctl_vm_t:file { getattr open read };
-allow vllm_exec_t sysfs_t:dir read;
-allow vllm_exec_t sysfs_t:file { getattr open read };
-allow vllm_exec_t urandom_device_t:chr_file { ioctl getattr open read };
-allow vllm_exec_t user_home_dir_t:dir { getattr search };
-allow vllm_exec_t usr_t:file { getattr ioctl open read };
-allow vllm_exec_t usr_t:lnk_file read;
-allow vllm_exec_t self:capability { sys_admin sys_nice net_admin };
-allow vllm_exec_t net_conf_t:file { open read };
-allow vllm_exec_t security_t:file { open read };
-allow vllm_exec_t self:netlink_route_socket { bind create getattr nlmsg_read read write };
-allow vllm_exec_t selinux_config_t:file { open read };
-allow vllm_exec_t nsfs_t:file getattr;
-allow vllm_exec_t systemd_resolved_runtime_t:file { open read };
+allow vllm_t kmod_t:process { noatsecure rlimitinh siginh };
+allow vllm_t self:netlink_rdma_socket { create bind getattr read setopt write };
+allow vllm_t self:unix_dgram_socket sendto;
+allow vllm_t cert_t:dir search;
+allow vllm_t cert_t:file { getattr open read };
+allow vllm_t device_t:chr_file { create getattr ioctl open read setattr write };
+allow vllm_t device_t:dir { add_name create remove_name setattr };
+allow vllm_t device_t:lnk_file { create unlink };
+allow vllm_t etc_t:file { getattr open read };
+allow vllm_t etc_t:lnk_file read;
+allow vllm_t home_root_t:dir { getattr search };
+allow vllm_t init_t:fd use;
+allow vllm_t init_t:unix_stream_socket { getattr ioctl read write };
+allow vllm_t locale_t:dir { getattr open read search };
+allow vllm_t locale_t:file { getattr ioctl map open read };
+allow vllm_t locale_t:lnk_file read;
+allow vllm_t proc_t:file { getattr ioctl open read };
+allow vllm_t self:capability { dac_read_search mknod };
+allow vllm_t self:capability2 { perfmon syslog };
+allow vllm_t self:fifo_file { getattr ioctl read write };
+allow vllm_t self:process { execmem getsched setsched signal };
+allow vllm_t sysctl_t:dir search;
+allow vllm_t sysctl_vm_t:dir search;
+allow vllm_t sysctl_vm_t:file { getattr open read };
+allow vllm_t sysfs_t:dir read;
+allow vllm_t sysfs_t:file { getattr open read };
+allow vllm_t urandom_device_t:chr_file { ioctl getattr open read };
+allow vllm_t user_home_dir_t:dir { getattr search };
+allow vllm_t usr_t:file { getattr ioctl open read };
+allow vllm_t usr_t:lnk_file read;
+allow vllm_t self:capability { sys_admin sys_nice net_admin };
+allow vllm_t net_conf_t:file { open read };
+allow vllm_t security_t:file { open read };
+allow vllm_t self:netlink_route_socket { bind create getattr nlmsg_read read write };
+allow vllm_t selinux_config_t:file { open read };
+allow vllm_t nsfs_t:file getattr;
+allow vllm_t systemd_resolved_runtime_t:file { open read };
 
-# currently vllm home and hf cache have initrc_tmp_t context
-allow vllm_exec_t initrc_tmp_t:dir { add_name create link remove_name search create open read write rename reparent setattr unlink };
-allow vllm_exec_t initrc_tmp_t:file { append execute execute_no_trans ioctl link lock map setattr create getattr open read rename write };
-allow vllm_exec_t initrc_tmp_t:lnk_file { create ioctl link lock read rename setattr write };
+# currently vllm home and hf cache have vllm_data_t context, as well as /ollama/.vllm directory
+allow vllm_t vllm_data_t:dir { add_name create link remove_name search create open read write rename reparent setattr unlink rmdir };
+allow vllm_t vllm_data_t:file { append execute execute_no_trans ioctl link lock map setattr create getattr open read rename write unlink };
+allow vllm_t vllm_data_t:lnk_file { create ioctl link lock read rename setattr write };
 
-# access to initramfs content
-allow vllm_exec_t default_t:dir { add_name create remove_name rmdir };
-allow vllm_exec_t default_t:file { create execute ioctl map open read rename unlink write };
-
-allow vllm_exec_t self:process { getattr getsession setsched sigchld sigkill signal signull sigstop };
+allow vllm_t self:process { getattr getsession setsched sigchld sigkill signal signull sigstop };
 
 # vllm is calling lscpu
-allow vllm_exec_t proc_t:file { ioctl lock open read };
-allow vllm_exec_t proc_t:dir { open read search };
+allow vllm_t proc_t:file { ioctl lock open read };
+allow vllm_t proc_t:dir { open read search };
 
-allow vllm_exec_t file_type:dir { getattr ioctl lock open read search };
-allow vllm_exec_t file_type:fifo_file getattr;
-allow vllm_exec_t file_type:file getattr;
-allow vllm_exec_t file_type:filesystem getattr;
-allow vllm_exec_t file_type:lnk_file getattr;
-allow vllm_exec_t file_type:sock_file getattr;
-allow vllm_exec_t client_packet_type:packet { recv send };
-allow vllm_exec_t device_node:blk_file getattr;
-allow vllm_exec_t device_node:chr_file { getattr setattr };
-allow vllm_exec_t device_t:blk_file getattr;
-allow vllm_exec_t device_t:chr_file { append create getattr ioctl lock map open read setattr unlink write };
-allow vllm_exec_t device_t:dir { add_name create remove_name setattr write };
-allow vllm_exec_t device_t:lnk_file { create ioctl link lock rename setattr unlink write };
-allow vllm_exec_t domain:dir { getattr ioctl lock open read search };
-allow vllm_exec_t domain:file { getattr ioctl lock open read };
-allow vllm_exec_t domain:lnk_file { getattr read };
-allow vllm_exec_t ld_so_cache_t:file { append write };
-allow vllm_exec_t ld_so_t:file execute_no_trans;
-allow vllm_exec_t lib_t:file execute_no_trans;
-allow vllm_exec_t privfd:fd use;
-allow vllm_exec_t proc_mdstat_t:file { getattr ioctl lock open read };
-allow vllm_exec_t proc_net_t:dir { getattr ioctl lock open read search };
-allow vllm_exec_t proc_net_t:file { getattr ioctl lock open read };
-allow vllm_exec_t proc_net_t:lnk_file { getattr read };
-allow vllm_exec_t ramfs_t:sock_file { append open write };
-allow vllm_exec_t random_device_t:chr_file { append ioctl lock open read write };
-allow vllm_exec_t sysctl_irq_t:dir { add_name write };
-allow vllm_exec_t sysctl_irq_t:file create;
-allow vllm_exec_t sysctl_type:dir { getattr ioctl lock open read search };
-allow vllm_exec_t sysctl_type:file { append getattr ioctl lock open read setattr write };
-allow vllm_exec_t sysfs_t:file { append ioctl lock open read write };
-allow vllm_exec_t sysfs_t:lnk_file read;
-allow vllm_exec_t tty_device_t:chr_file { append ioctl lock open read relabelto write };
-allow vllm_exec_t ttynode:chr_file { append ioctl lock open read relabelfrom write };
+allow vllm_t file_type:dir { getattr ioctl lock open read search };
+allow vllm_t file_type:fifo_file getattr;
+allow vllm_t file_type:file getattr;
+allow vllm_t file_type:filesystem getattr;
+allow vllm_t file_type:lnk_file getattr;
+allow vllm_t file_type:sock_file getattr;
+allow vllm_t client_packet_type:packet { recv send };
+allow vllm_t device_node:blk_file getattr;
+allow vllm_t device_node:chr_file { getattr setattr };
+allow vllm_t device_t:blk_file getattr;
+allow vllm_t device_t:chr_file { append create getattr ioctl lock map open read setattr unlink write };
+allow vllm_t device_t:dir { add_name create remove_name setattr write };
+allow vllm_t device_t:lnk_file { create ioctl link lock rename setattr unlink write };
+allow vllm_t domain:dir { getattr ioctl lock open read search };
+allow vllm_t domain:file { getattr ioctl lock open read };
+allow vllm_t domain:lnk_file { getattr read };
+allow vllm_t ld_so_cache_t:file { append write };
+allow vllm_t ld_so_t:file execute_no_trans;
+allow vllm_t lib_t:file execute_no_trans;
+allow vllm_t privfd:fd use;
+allow vllm_t proc_mdstat_t:file { getattr ioctl lock open read };
+allow vllm_t proc_net_t:dir { getattr ioctl lock open read search };
+allow vllm_t proc_net_t:file { getattr ioctl lock open read };
+allow vllm_t proc_net_t:lnk_file { getattr read };
+allow vllm_t ramfs_t:sock_file { append open write };
+allow vllm_t random_device_t:chr_file { append ioctl lock open read write };
+allow vllm_t sysctl_irq_t:dir { add_name write };
+allow vllm_t sysctl_irq_t:file create;
+allow vllm_t sysctl_type:dir { getattr ioctl lock open read search };
+allow vllm_t sysctl_type:file { append getattr ioctl lock open read setattr write };
+allow vllm_t sysfs_t:file { append ioctl lock open read write };
+allow vllm_t sysfs_t:lnk_file read;
+allow vllm_t tty_device_t:chr_file { append ioctl lock open read relabelto write };
+allow vllm_t ttynode:chr_file { append ioctl lock open read relabelfrom write };
 
-allow vllm_exec_t self:fifo_file open;
-allow vllm_exec_t self:file { append write };
-allow vllm_exec_t self:lnk_file { ioctl lock };
-allow vllm_exec_t self:netlink_audit_socket { append bind connect create getattr getopt ioctl nlmsg_read nlmsg_relay read setattr setopt shutdown write };
-allow vllm_exec_t self:netlink_route_socket { append bind connect create getattr getopt ioctl nlmsg_read read setattr setopt shutdown write };
-allow vllm_exec_t self:passwd { passwd rootok };
-allow vllm_exec_t self:process { execmem fork getcap getpgid getsched setpgid setrlimit };
+allow vllm_t self:fifo_file open;
+allow vllm_t self:file { append write };
+allow vllm_t self:lnk_file { ioctl lock };
+allow vllm_t self:netlink_audit_socket { append bind connect create getattr getopt ioctl nlmsg_read nlmsg_relay read setattr setopt shutdown write };
+allow vllm_t self:netlink_route_socket { append bind connect create getattr getopt ioctl nlmsg_read read setattr setopt shutdown write };
+allow vllm_t self:passwd { passwd rootok };
+allow vllm_t self:process { execmem fork getcap getpgid getsched setpgid setrlimit };
 
-allow vllm_exec_t tmpfile:dir { remove_name rmdir write };
-allow vllm_exec_t tmpfile:fifo_file unlink;
-allow vllm_exec_t tmpfile:file unlink;
-allow vllm_exec_t tmpfile:lnk_file unlink;
-allow vllm_exec_t tmpfile:sock_file unlink;
-allow vllm_exec_t tmpfs_t:dir { rmdir write add_name create getattr remove_name search };
-allow vllm_exec_t tmpfs_t:file { getattr create execute ioctl link map open read unlink write };
-allow vllm_exec_t tmp_t:dir { add_name create getattr open read remove_name rmdir search write };
-allow vllm_exec_t tmp_t:file { create getattr setattr ioctl open read rename unlink write execute lock map };
-allow vllm_exec_t tmp_t:sock_file { create unlink write };
+allow vllm_t tmpfile:dir { remove_name rmdir write };
+allow vllm_t tmpfile:fifo_file unlink;
+allow vllm_t tmpfile:file unlink;
+allow vllm_t tmpfile:lnk_file unlink;
+allow vllm_t tmpfile:sock_file unlink;
+allow vllm_t tmpfs_t:dir { rmdir write add_name create getattr remove_name search };
+allow vllm_t tmpfs_t:file { getattr create execute ioctl link map open read unlink write };
+allow vllm_t tmp_t:dir { add_name create getattr open read remove_name rmdir search write };
+allow vllm_t tmp_t:file { create getattr setattr ioctl open read rename unlink write execute lock map };
+allow vllm_t tmp_t:sock_file { create unlink write };
 
 ## networking
 # allow binding to 0.0.0.0
-allow vllm_exec_t node_t:tcp_socket node_bind;
-allow vllm_exec_t node_t:udp_socket node_bind;
+allow vllm_t node_t:tcp_socket node_bind;
+allow vllm_t node_t:udp_socket node_bind;
 
 # VLLM listens on port 11435 for requests and pytorch distributed communication lib listens on a random port for some reason.
 # We could create a separate domain for 11435 but we'd still have to setup the same permissions for unreserved_port_t,
-allow vllm_exec_t unreserved_port_t:tcp_socket { name_bind name_connect };
-allow vllm_exec_t self:tcp_socket { accept append bind connect create getattr getopt ioctl listen read setattr setopt shutdown write };
-allow vllm_exec_t self:udp_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
-allow vllm_exec_t self:unix_dgram_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
-allow vllm_exec_t self:unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen read setattr setopt shutdown write };
+allow vllm_t unreserved_port_t:tcp_socket { name_bind name_connect };
+allow vllm_t self:tcp_socket { accept append bind connect create getattr getopt ioctl listen read setattr setopt shutdown write };
+allow vllm_t self:udp_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
+allow vllm_t self:unix_dgram_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
+allow vllm_t self:unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen read setattr setopt shutdown write };
 
 # Additional rules for UFW compatibility (runs as a one-time setup service)
 allow init_t iptables_t:process noatsecure;

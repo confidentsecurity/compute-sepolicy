@@ -23,3 +23,7 @@
 /usr/vllm/vllm-env.*/bin/activate --   gen_context(system_u:object_r:vllm_exec_t,s0)
 /usr/vllm/vllm-env.*/bin/python.* --   gen_context(system_u:object_r:vllm_exec_t,s0)
 /usr/vllm/python/cpython-3\.12.*?-linux-x86_64-gnu/bin/python.* --   gen_context(system_u:object_r:vllm_exec_t,s0)
+
+/models/vllm(/.*)?      gen_context(system_u:object_r:vllm_data_t,s0)
+/tmp/hf_home(/.*)?      gen_context(system_u:object_r:vllm_data_t,s0)
+/tmp/vllm_cache(/.*)?   gen_context(system_u:object_r:vllm_data_t,s0)
