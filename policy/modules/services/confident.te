@@ -497,6 +497,11 @@ allow vllm_t self:udp_socket { append bind connect create getattr getopt ioctl r
 allow vllm_t self:unix_dgram_socket { append bind connect create getattr getopt ioctl read setattr setopt shutdown write };
 allow vllm_t self:unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen read setattr setopt shutdown write };
 
+# VLLM logs usage stats to /var/log/vllm.log and exposes a /metrics endpoint to gather metrics.
+allow vllm_exec_t http_port_t:tcp_socket name_connect;
+allow vllm_exec_t var_log_t:dir { add_name write };
+allow vllm_exec_t var_log_t:file { append create ioctl open write };
+
 # Additional rules for UFW compatibility (runs as a one-time setup service)
 allow init_t iptables_t:process noatsecure;
 allow sysadm_t iptables_t:process { noatsecure rlimitinh siginh transition };
