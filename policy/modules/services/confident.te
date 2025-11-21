@@ -356,13 +356,13 @@ files_type(vllm_data_t);
 # additional rules for vLLM on GCP GPU
 allow kernel_t var_t:dir add_name;
 allow kernel_t var_t:file { create getattr ioctl open read setattr write };
-allow kernel_t vllm_exec_t:file { getattr ioctl open read };
-allow kernel_t vllm_exec_t:lnk_file read;
+allow kernel_t vllm_t:file { getattr ioctl open read };
+allow kernel_t vllm_t:lnk_file read;
 allow kernel_t vllm_t:process getattr;
 
 # addional rules for vLLM on CPU
-allow systemd_run_t vllm_exec_t:dir { getattr search };
-allow systemd_run_t vllm_exec_t:file { open read };
+allow systemd_run_t vllm_t:dir { getattr search };
+allow systemd_run_t vllm_t:file { open read };
 
 
 allow vllm_t self:file { entrypoint execute execute_no_trans map };
@@ -498,9 +498,9 @@ allow vllm_t self:unix_dgram_socket { append bind connect create getattr getopt 
 allow vllm_t self:unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen read setattr setopt shutdown write };
 
 # VLLM logs usage stats to /var/log/vllm.log and exposes a /metrics endpoint to gather metrics.
-allow vllm_exec_t http_port_t:tcp_socket name_connect;
-allow vllm_exec_t var_log_t:dir { add_name write };
-allow vllm_exec_t var_log_t:file { append create ioctl open write };
+allow vllm_t http_port_t:tcp_socket name_connect;
+allow vllm_t var_log_t:dir { add_name write };
+allow vllm_t var_log_t:file { append create ioctl open write };
 
 # Additional rules for UFW compatibility (runs as a one-time setup service)
 allow init_t iptables_t:process noatsecure;
