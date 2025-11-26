@@ -1,3 +1,15 @@
+# Preamble
+
+This repo contains the SE linux policy used in Confident Security's compute node implementation ([https://github.com/confidentsecurity/confident-compute](https://github.com/confidentsecurity/confident-compute)).
+
+This repo is based on the [Reference Policy](https://github.com/SELinuxProject/refpolicy) project, with some modifications to support our use case,
+mostly contained in `policy/modules/services/confident.*`.
+
+See also, OpenPCC ([https://github.com/confidentsecurity/openpcc](https://github.com/confidentsecurity/openpcc)) for more information
+about Confident Security's open-source offerings.
+
+# Reference Policy Documentation
+
 1) Reference Policy make targets:
 
 General Make targets:
