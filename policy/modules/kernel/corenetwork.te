@@ -1929,17 +1929,21 @@ portcon tcp 8021 gen_context(system_u:object_r:zope_port_t,s0)
 # punching out holes for the associated ports:
 #
 # 11434 and 8081 for confident security (change for openllm when needed)
+# and 8091 for metadata server on bare metal
 portcon udp 1024-8080 gen_context(system_u:object_r:unreserved_port_t, s0)
-portcon udp 8082-11433 gen_context(system_u:object_r:unreserved_port_t, s0)
+portcon udp 8082-8090 gen_context(system_u:object_r:unreserved_port_t, s0)
+portcon udp 8092-11433 gen_context(system_u:object_r:unreserved_port_t, s0)
 portcon udp 11435-65535 gen_context(system_u:object_r:unreserved_port_t, s0)
 
 portcon tcp 1024-8080 gen_context(system_u:object_r:unreserved_port_t, s0)
-portcon tcp 8082-11433 gen_context(system_u:object_r:unreserved_port_t, s0)
+portcon tcp 8082-8090 gen_context(system_u:object_r:unreserved_port_t, s0)
+portcon tcp 8092-11433 gen_context(system_u:object_r:unreserved_port_t, s0)
 portcon tcp 11435-65535 gen_context(system_u:object_r:unreserved_port_t, s0)
 
 portcon tcp 512-1023 gen_context(system_u:object_r:hi_reserved_port_t, s0)
 portcon sctp 1024-8080 gen_context(system_u:object_r:unreserved_port_t, s0)
-portcon sctp 8082-11433 gen_context(system_u:object_r:unreserved_port_t, s0)
+portcon sctp 8082-8090 gen_context(system_u:object_r:unreserved_port_t, s0)
+portcon sctp 8092-11433 gen_context(system_u:object_r:unreserved_port_t, s0)
 portcon sctp 11435-65535 gen_context(system_u:object_r:unreserved_port_t, s0)
 portcon sctp 512-1023 gen_context(system_u:object_r:hi_reserved_port_t, s0)
 portcon udp 512-1023 gen_context(system_u:object_r:hi_reserved_port_t, s0)
