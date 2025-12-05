@@ -510,3 +510,10 @@ allow vllm_exec_t self:unix_stream_socket { accept append bind connect connectto
 allow init_t iptables_t:process noatsecure;
 allow sysadm_t iptables_t:process { noatsecure rlimitinh siginh transition };
 allow sysadm_t syslogd_exec_t:file execute;
+
+# Use the systemd interface for journal access as root
+systemd_read_journal_files(sysadm_t)
+systemd_list_journal_dirs(sysadm_t)
+
+# Additional permission for journalctl -f (watch/follow)
+allow sysadm_t systemd_journal_t:dir watch;
