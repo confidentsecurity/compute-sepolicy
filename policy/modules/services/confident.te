@@ -517,3 +517,15 @@ systemd_list_journal_dirs(sysadm_t)
 
 # Additional permission for journalctl -f (watch/follow)
 allow sysadm_t systemd_journal_t:dir watch;
+
+# wait-for-nvidia - lspci and dmesg
+allow confident_exec_t dmesg_exec_t:file { execute execute_no_trans getattr map open read };
+allow confident_exec_t kernel_t:system syslog_read;
+allow confident_exec_t kmsg_device_t:chr_file { open read };
+allow confident_exec_t self:capability sys_rawio;
+allow confident_exec_t self:capability2 syslog;
+allow confident_exec_t sysfs_t:dir read;
+allow confident_exec_t sysfs_t:file { open read };
+allow confident_exec_t sysfs_t:lnk_file read;
+allow confident_exec_t usr_t:file { open read };
+

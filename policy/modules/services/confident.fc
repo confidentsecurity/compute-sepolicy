@@ -10,6 +10,7 @@
 /opt/confidentsec/bin/make-compute-config	--	gen_context(system_u:object_r:confident_exec_t,s0)
 /opt/confidentsec/bin/make-compute-boot	--	gen_context(system_u:object_r:confident_exec_t,s0)
 /opt/confidentsec/bin/system_conf.sh	--	gen_context(system_u:object_r:confident_exec_t,s0)
+/opt/confidentsec/bin/wait-for-nvidia-driver-init\.sh	--	gen_context(system_u:object_r:confident_exec_t,s0)
 /opt/confidentsec/bin/compute-boot-secret-wrapper	--	gen_context(system_u:object_r:confident_exec_t,s0)
 
 /opt/confidentsec/etc/compute_boot\.service	--	gen_context(system_u:object_r:confident_config_t,s0)
